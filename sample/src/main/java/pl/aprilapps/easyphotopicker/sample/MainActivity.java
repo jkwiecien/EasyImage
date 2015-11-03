@@ -1,8 +1,6 @@
 package pl.aprilapps.easyphotopicker.sample;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -15,7 +13,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.aprilapps.easyphotopicker.EasyImage;
-import pl.aprilapps.easyphotopicker.EasyImageConfig;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,22 +40,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK && requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY && data != null) {
-            Uri originalPhotoPath = data.getData();
-            try {
-                onPhotoReturned(EasyImage.pickedGalleryPicture(this, originalPhotoPath));
-            } catch (Exception e) {
-                e.printStackTrace();
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
+                //Some error handling
             }
 
-        } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
-            try {
-                File photoFile = EasyImage.takenCameraPicture(this);
-                onPhotoReturned(photoFile);
-            } catch (Exception e) {
-                e.printStackTrace();
+            @Override
+            public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
+                //Handle the image
+                onPhotoReturned(imageFile);
             }
-        }
+        });
     }
 
     private void onPhotoReturned(File photoFile) {

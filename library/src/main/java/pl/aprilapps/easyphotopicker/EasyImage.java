@@ -23,15 +23,25 @@ import java.util.UUID;
  */
 public class EasyImage implements EasyImageConfig {
 
+    public enum ImageSource {
+        GALLERY, CAMERA
+    }
+
+    public interface Callbacks {
+        public void onImagePickerError(Exception e, ImageSource source);
+
+        public void onImagePicked(File imageFile, ImageSource source);
+    }
+
     private static final String KEY_PHOTO_URI = "photo_uri";
 
-    public static File tempImageDirectory(Context context) {
+    private static File tempImageDirectory(Context context) {
         File dir = new File(context.getApplicationContext().getCacheDir(), "Images");
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
 
-    public static File publicImageDirectory() {
+    private static File publicImageDirectory() {
         File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Images");
         if (!dir.exists()) dir.mkdirs();
         return dir;
@@ -56,7 +66,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static File pickedGalleryPicture(Context context, Uri photoPath) throws IOException {
+    private static File pickedGalleryPicture(Context context, Uri photoPath) throws IOException {
         InputStream pictureInputStream = context.getContentResolver().openInputStream(photoPath);
         File directory = EasyImage.tempImageDirectory(context);
         File photoFile = new File(directory, UUID.randomUUID().toString());
@@ -66,13 +76,13 @@ public class EasyImage implements EasyImageConfig {
 
     }
 
-    public static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
+    private static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
         URI imageUri = new URI(PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_PHOTO_URI, null));
         notifyGallery(context, imageUri);
         return new File(imageUri);
     }
 
-    public static void writeToFile(InputStream in, File file) {
+    private static void writeToFile(InputStream in, File file) {
         try {
             OutputStream out = new FileOutputStream(file);
             byte[] buf = new byte[1024];
@@ -87,7 +97,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void notifyGallery(Context context, URI pictureUri) throws URISyntaxException {
+    private static void notifyGallery(Context context, URI pictureUri) throws URISyntaxException {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(pictureUri);
         Uri contentUri = Uri.fromFile(f);
@@ -95,5 +105,24 @@ public class EasyImage implements EasyImageConfig {
         context.sendBroadcast(mediaScanIntent);
     }
 
+    public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
+        if (resultCode == Activity.RESULT_OK && requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY && data != null) {
+            Uri photoPath = data.getData();
+            try {
+                File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
+                callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
+            } catch (Exception e) {
+                e.printStackTrace();
+                callbacks.onImagePickerError(e, ImageSource.GALLERY);
+            }
+        } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+            try {
+                File photoFile = EasyImage.takenCameraPicture(activity);
+                callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
+            } catch (Exception e) {
+                callbacks.onImagePickerError(e, ImageSource.CAMERA);
+            }
+        }
+    }
 
 }
