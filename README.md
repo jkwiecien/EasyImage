@@ -17,7 +17,7 @@ Here are buttons click listeners for picking picture from gallery or taking with
     }
 ```
 
-Now there is only one thinh left to do:
+Now there is only one thig left to do:
 
 ```
     @Override
