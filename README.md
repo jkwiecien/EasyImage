@@ -55,9 +55,7 @@ repositories {
 }
     
 dependencies {
-    compile ('com.github.jkwiecien:Switcher:1.1.3'){
-        exclude module: 'appcompat-v7'
-    }
+    compile 'com.github.jkwiecien:EasyImage:1.0.0'
 }
 ```
 
