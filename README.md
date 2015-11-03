@@ -21,23 +21,23 @@ protected void onPickFromGaleryClicked() {
 Now there is only one thig left to do:
 
 ```java
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
 
-        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
-            @Override
-            public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
-                //Some error handling
-            }
+    EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
+        @Override
+        public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
+            //Some error handling
+        }
 
-            @Override
-            public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
-                //Handle the image
-                onPhotoReturned(imageFile);
-            }
-        });
-    }
+        @Override
+        public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
+            //Handle the image
+            onPhotoReturned(imageFile);
+        }
+    });
+}
 ```
 
 
