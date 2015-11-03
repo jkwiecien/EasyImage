@@ -1,3 +1,4 @@
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725)
 # What is it?
 EasyImage allow you to eaisly take picture from gallery or camera without creating lots of boilerplate.
   
@@ -6,15 +7,15 @@ EasyImage allow you to eaisly take picture from gallery or camera without creati
 Here are buttons click listeners for picking picture from gallery or taking with camera:
 
 ```java
-    @OnClick(R.id.camera_button)
-    protected void onTakePhotoClicked() {
-        EasyImage.openCamera(this);
-    }
+@OnClick(R.id.camera_button)
+protected void onTakePhotoClicked() {
+    EasyImage.openCamera(this);
+}
 
-    @OnClick(R.id.gallery_button)
-    protected void onPickFromGaleryClicked() {
-        EasyImage.openGalleryPicker(this);
-    }
+@OnClick(R.id.gallery_button)
+protected void onPickFromGaleryClicked() {
+    EasyImage.openGalleryPicker(this);
+}
 ```
 
 Now there is only one thig left to do:
