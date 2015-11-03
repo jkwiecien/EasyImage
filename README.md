@@ -50,6 +50,7 @@ Library requires permissions from your app:
 
 Disclaimer: I'm planning to handle runtime permissions as soon I get hands on the Marshmallow device.
 
+```
 repositories {
     maven { url "https://jitpack.io" }
 }
