@@ -44,8 +44,8 @@ Now there is only one thinh left to do:
 
 Library requires permissions from your app:
 ```
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.CAMERA" />
 ```
 
 Disclaimer: I'm planning to handle runtime permissions as soon I get hands on the Marshmallow device.
