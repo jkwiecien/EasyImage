@@ -41,7 +41,7 @@ Now there is only one thinh left to do:
 
 
 #Setup
-```
+
 Library requires permissions from your app:
 ```
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
