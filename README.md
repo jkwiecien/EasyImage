@@ -43,10 +43,9 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 #Setup
 
-Library requires permissions from your app:
+Library requires permission from your app:
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.CAMERA" />
 ```
 
 Disclaimer: I'm planning to handle runtime permissions as soon I get hands on the Marshmallow device.
