@@ -48,9 +48,9 @@ Library requires permission from your app. Declare it in your ```AndroidMnifest.
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-**Please note** that for devices running Marshmallow and higher you have to request this permission in the runtime, beofre calling ```EasyImage.openCamera()```
+**Please note** that for devices running Marshmallow and higher you have to request this permission in the runtime, beofre calling ```EasyImage.openCamera()```. It's demonstrated in the sample app.
 
-[This library](https://github.com/tajchert/Nammu) will help you with that
+[This library](https://github.com/tajchert/Nammu) will help you with that.
 
 
 ```groovy
