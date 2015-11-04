@@ -1,7 +1,11 @@
 package pl.aprilapps.easyphotopicker.sample;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
@@ -16,6 +20,8 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
+
     @Bind(R.id.image_view)
     protected ImageView imageView;
 
@@ -26,9 +32,31 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
+    public MainActivity() {
+    }
+
     @OnClick(R.id.camera_button)
     protected void onTakePhotoClicked() {
-        EasyImage.openCamera(this);
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            EasyImage.openCamera(this);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // permission was granted
+                EasyImage.openCamera(this);
+            } else {
+                // permission denied, boo!
+            }
+        }
     }
 
     @OnClick(R.id.gallery_button)
