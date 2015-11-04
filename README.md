@@ -43,10 +43,15 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 #Setup
 
-Library requires permission from your app:
+Library requires permission from your app. Declare it in your ```AndroidMnifest.xml```
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
+
+**Please note** that for devices running Marshmallow and higher you have to request this permission in the runtime, beofre calling ```EasyImage.openCamera()```
+
+[This library](https://github.com/tajchert/Nammu) will help you with that
+
 
 Disclaimer: I'm planning to handle runtime permissions as soon I get hands on the Marshmallow device.
 
