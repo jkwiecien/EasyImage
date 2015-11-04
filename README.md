@@ -18,7 +18,7 @@ protected void onPickFromGaleryClicked() {
 }
 ```
 
-Now there is only one thig left to do:
+Now there is only one thing left to do:
 
 ```java
 @Override
