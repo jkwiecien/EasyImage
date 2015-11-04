@@ -53,8 +53,6 @@ Library requires permission from your app. Declare it in your ```AndroidMnifest.
 [This library](https://github.com/tajchert/Nammu) will help you with that
 
 
-Disclaimer: I'm planning to handle runtime permissions as soon I get hands on the Marshmallow device.
-
 ```groovy
 repositories {
     maven { url "https://jitpack.io" }
