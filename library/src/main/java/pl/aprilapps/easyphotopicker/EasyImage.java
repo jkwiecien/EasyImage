@@ -28,12 +28,12 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public interface Callbacks {
-        public void onImagePickerError(Exception e, ImageSource source);
+        void onImagePickerError(Exception e, ImageSource source);
 
-        public void onImagePicked(File imageFile, ImageSource source);
+        void onImagePicked(File imageFile, ImageSource source);
     }
 
-    private static final String KEY_PHOTO_URI = "photo_uri";
+    private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
 
     private static File tempImageDirectory(Context context) {
         File dir = new File(context.getApplicationContext().getCacheDir(), "Images");
