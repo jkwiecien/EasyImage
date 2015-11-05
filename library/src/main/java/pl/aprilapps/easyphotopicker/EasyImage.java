@@ -31,6 +31,8 @@ public class EasyImage implements EasyImageConfig {
         void onImagePickerError(Exception e, ImageSource source);
 
         void onImagePicked(File imageFile, ImageSource source);
+
+        void onCanceled();
     }
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
@@ -115,13 +117,15 @@ public class EasyImage implements EasyImageConfig {
                 e.printStackTrace();
                 callbacks.onImagePickerError(e, ImageSource.GALLERY);
             }
-        } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+        } else if (resultCode == Activity.RESULT_OK && requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
             try {
                 File photoFile = EasyImage.takenCameraPicture(activity);
                 callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
             } catch (Exception e) {
                 callbacks.onImagePickerError(e, ImageSource.CAMERA);
             }
+        } else {
+            callbacks.onCanceled();
         }
     }
 
