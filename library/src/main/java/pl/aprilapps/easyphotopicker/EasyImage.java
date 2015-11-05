@@ -54,7 +54,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void openCamera(Activity activity) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
         try {
             File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
             Uri capturedImageUri = Uri.fromFile(image);
