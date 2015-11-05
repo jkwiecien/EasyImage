@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -56,7 +57,13 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void openCamera(Activity activity) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+        } else {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
+
         try {
             File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
             Uri capturedImageUri = Uri.fromFile(image);
