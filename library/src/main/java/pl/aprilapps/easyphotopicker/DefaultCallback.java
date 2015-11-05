@@ -15,5 +15,5 @@ public class DefaultCallback implements EasyImage.Callbacks {
     public void onImagePicked(File imageFile, EasyImage.ImageSource source) {}
 
     @Override
-    public void onCanceled() {}
+    public void onCanceled(EasyImage.ImageSource source) {}
 }

@@ -32,7 +32,7 @@ public class EasyImage implements EasyImageConfig {
 
         void onImagePicked(File imageFile, ImageSource source);
 
-        void onCanceled();
+        void onCanceled(ImageSource source);
     }
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
@@ -108,24 +108,30 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
-        if (resultCode == Activity.RESULT_OK && requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY && data != null) {
-            Uri photoPath = data.getData();
-            try {
-                File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
-                callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
-            } catch (Exception e) {
-                e.printStackTrace();
-                callbacks.onImagePickerError(e, ImageSource.GALLERY);
+        if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                Uri photoPath = data.getData();
+                try {
+                    File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
+                    callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    callbacks.onImagePickerError(e, ImageSource.GALLERY);
+                }
+            } else {
+                callbacks.onCanceled(ImageSource.GALLERY);
             }
-        } else if (resultCode == Activity.RESULT_OK && requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
-            try {
-                File photoFile = EasyImage.takenCameraPicture(activity);
-                callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
-            } catch (Exception e) {
-                callbacks.onImagePickerError(e, ImageSource.CAMERA);
+        } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    File photoFile = EasyImage.takenCameraPicture(activity);
+                    callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
+                } catch (Exception e) {
+                    callbacks.onImagePickerError(e, ImageSource.CAMERA);
+                }
+            } else {
+                callbacks.onCanceled(ImageSource.CAMERA);
             }
-        } else {
-            callbacks.onCanceled();
         }
     }
 
