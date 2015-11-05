@@ -16,6 +16,7 @@ import java.io.File;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class MainActivity extends AppCompatActivity {
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
             public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
                 //Some error handling
@@ -78,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
             public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
                 //Handle the image
                 onPhotoReturned(imageFile);
+            }
+
+            @Override
+            public void onCanceled(EasyImage.ImageSource source) {
+                //Cancel handling
             }
         });
     }
