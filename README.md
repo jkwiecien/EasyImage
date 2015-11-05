@@ -59,7 +59,7 @@ repositories {
 }
     
 dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.0.4'
+    compile 'com.github.jkwiecien:EasyImage:1.0.6'
 }
 ```
 
