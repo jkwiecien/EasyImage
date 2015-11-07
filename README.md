@@ -18,7 +18,7 @@ protected void onPickFromGaleryClicked() {
 }
 
 @OnClick(R.id.camera_or_gallery_button)
-protected void onPickFromGaleryClicked() {
+protected void onChooseCameraOrGaleryClicked() {
     EasyImage.openCameraOrGalleryPicker(this, "Pick image");
 }
 ```
