@@ -30,4 +30,10 @@
         android:drawableLeft="@drawable/ic_insert_photo_black_24dp"
         android:text="Pick from gallery" />
 
+    <Button
+        android:id="@+id/camera_or_gallery_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Choose camera or gallery" />
+
 </LinearLayout>
