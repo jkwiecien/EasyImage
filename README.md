@@ -1,7 +1,7 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725)
 # What is it?
 EasyImage allow you to eaisly take picture from gallery or camera without creating lots of boilerplate.
-  
+
 #How to use it?
 
 Here are buttons click listeners for picking picture from gallery or taking with camera:
@@ -15,6 +15,11 @@ protected void onTakePhotoClicked() {
 @OnClick(R.id.gallery_button)
 protected void onPickFromGaleryClicked() {
     EasyImage.openGalleryPicker(this);
+}
+
+@OnClick(R.id.camera_or_gallery_button)
+protected void onChooseCameraOrGaleryClicked() {
+    EasyImage.openCameraOrGalleryPicker(this, "Pick image");
 }
 ```
 
@@ -57,7 +62,7 @@ Library requires permission from your app. Declare it in your ```AndroidMnifest.
 repositories {
     maven { url "https://jitpack.io" }
 }
-    
+
 dependencies {
     compile 'com.github.jkwiecien:EasyImage:1.0.6'
 }

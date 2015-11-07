@@ -65,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
         EasyImage.openGalleryPicker(this);
     }
 
+    @OnClick(R.id.camera_or_gallery_button)
+    protected void onChooseCameraOrGaleryClicked() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            EasyImage.openCameraOrGalleryPicker(this, "Pick image");
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
