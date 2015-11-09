@@ -1,6 +1,7 @@
 package pl.aprilapps.easyphotopicker;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -56,6 +57,12 @@ public class EasyImage implements EasyImageConfig {
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
+    public static void openGalleryPicker(Fragment fragment) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
+    }
+
     public static void openCamera(Activity activity) {
         Intent intent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -70,6 +77,25 @@ public class EasyImage implements EasyImageConfig {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
             activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
             PreferenceManager.getDefaultSharedPreferences(activity).edit().putString(KEY_PHOTO_URI, capturedImageUri.toString()).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openCamera(Fragment fragment) {
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+        } else {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
+
+        try {
+            File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
+            Uri capturedImageUri = Uri.fromFile(image);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+            fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
+            PreferenceManager.getDefaultSharedPreferences(fragment.getActivity()).edit().putString(KEY_PHOTO_URI, capturedImageUri.toString()).commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
