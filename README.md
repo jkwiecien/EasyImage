@@ -43,6 +43,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 #Setup
 
+##Runtime permissions
 Library requires permission from your app. Declare it in your ```AndroidMnifest.xml```
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -58,7 +59,7 @@ For this reason, if your app uses ```CAMERA``` permission, you should check it *
 
 [This library](https://github.com/tajchert/Nammu) will help you manage runtime permissions.
 
-
+##Gradle dependency
 ```groovy
 repositories {
     maven { url "https://jitpack.io" }
