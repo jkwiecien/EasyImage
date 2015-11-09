@@ -1,6 +1,5 @@
 package pl.aprilapps.easyphotopicker;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -60,8 +59,8 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static Intent createCameraIntent(Context context, boolean secure) {
-        @SuppressLint("InlinedApi") Intent intent = secure ? new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE) : new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    private static Intent createCameraIntent(Context context) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
             File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
             Uri capturedImageUri = Uri.fromFile(image);
@@ -90,48 +89,18 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void openCamera(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            try {
-                Intent intent = createCameraIntent(activity, true);
-                activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
-            } catch (ActivityNotFoundException e) {
-                Intent intent = createCameraIntent(activity, false);
-                activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
-            }
-        } else {
-            Intent intent = createCameraIntent(activity, false);
-            activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
-        }
+        Intent intent = createCameraIntent(activity);
+        activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
     public static void openCamera(Fragment fragment) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            try {
-                Intent intent = createCameraIntent(fragment.getActivity(), true);
-                fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
-            } catch (ActivityNotFoundException e) {
-                Intent intent = createCameraIntent(fragment.getActivity(), false);
-                fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
-            }
-        } else {
-            Intent intent = createCameraIntent(fragment.getActivity(), false);
-            fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
-        }
+        Intent intent = createCameraIntent(fragment.getActivity());
+        fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
     public static void openCamera(android.app.Fragment fragment) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            try {
-                Intent intent = createCameraIntent(fragment.getActivity(), true);
-                fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
-            } catch (ActivityNotFoundException e) {
-                Intent intent = createCameraIntent(fragment.getActivity(), false);
-                fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
-            }
-        } else {
-            Intent intent = createCameraIntent(fragment.getActivity(), false);
-            fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
-        }
+        Intent intent = createCameraIntent(fragment.getActivity());
+        fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
     private static File pickedGalleryPicture(Context context, Uri photoPath) throws IOException {
