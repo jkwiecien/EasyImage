@@ -56,7 +56,7 @@ Library requires permission from your app. Declare it in your ```AndroidMnifest.
 
 For this reason, if your app uses ```CAMERA``` permission, you should check it **aswell** as ```WRITE_EXTERNAL_STORAGE``` before calling ```EasyImage.openCamera()```
 
-[This library](https://github.com/tajchert/Nammu) will help you with that.
+[This library](https://github.com/tajchert/Nammu) will help you manage runtime permissions.
 
 
 ```groovy
