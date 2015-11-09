@@ -1,12 +1,14 @@
 package pl.aprilapps.easyphotopicker;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -18,6 +20,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -59,18 +63,74 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
+    private static Uri createCameraPictureFile(Context context) throws IOException {
+        File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
+        Uri uri = Uri.fromFile(image);
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(KEY_PHOTO_URI, uri.toString()).commit();
+        return uri;
+    }
+
+
     private static Intent createCameraIntent(Context context) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
-            File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
-            Uri capturedImageUri = Uri.fromFile(image);
+            Uri capturedImageUri = createCameraPictureFile(context);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(KEY_PHOTO_URI, capturedImageUri.toString()).commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return intent;
+    }
+
+    private static Intent createChooserIntent(Context context) throws IOException {
+        Uri outputFileUri = createCameraPictureFile(context);
+        List<Intent> cameraIntents = new ArrayList<>();
+        Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> camList = packageManager.queryIntentActivities(captureIntent, 0);
+        for (ResolveInfo res : camList) {
+            final String packageName = res.activityInfo.packageName;
+            final Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            cameraIntents.add(intent);
+        }
+
+        Intent galleryIntent = createGalleryIntent();
+
+        Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
+
+        return chooserIntent;
+    }
+
+    public static void openChooser(Activity activity) {
+        try {
+            Intent intent = createChooserIntent(activity);
+            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openChooser(Fragment fragment) {
+        try {
+            Intent intent = createChooserIntent(fragment.getActivity());
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openChooser(android.app.Fragment fragment) {
+        try {
+            Intent intent = createChooserIntent(fragment.getActivity());
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void openGalleryPicker(Activity activity) {
@@ -143,31 +203,48 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
-        if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                Uri photoPath = data.getData();
-                try {
-                    File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
-                    callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    callbacks.onImagePickerError(e, ImageSource.GALLERY);
-                }
-            } else {
-                callbacks.onCanceled(ImageSource.GALLERY);
-            }
-        } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
             if (resultCode == Activity.RESULT_OK) {
-                try {
-                    File photoFile = EasyImage.takenCameraPicture(activity);
-                    callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
-                } catch (Exception e) {
-                    callbacks.onImagePickerError(e, ImageSource.CAMERA);
+                if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
+                    onPictureReturnedFromGallery(data, activity, callbacks);
+                } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+                    onPictureReturnedFromCamera(activity, callbacks);
+                } else if (data == null) {
+                    onPictureReturnedFromCamera(activity, callbacks);
+                } else {
+                    onPictureReturnedFromGallery(data, activity, callbacks);
                 }
             } else {
-                callbacks.onCanceled(ImageSource.CAMERA);
+                if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
+                    callbacks.onCanceled(ImageSource.GALLERY);
+                } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+                    callbacks.onCanceled(ImageSource.CAMERA);
+                } else if (data == null) {
+                    callbacks.onCanceled(ImageSource.CAMERA);
+                } else {
+                    callbacks.onCanceled(ImageSource.GALLERY);
+                }
             }
         }
     }
 
+    private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
+        try {
+            Uri photoPath = data.getData();
+            File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
+            callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
+        } catch (Exception e) {
+            e.printStackTrace();
+            callbacks.onImagePickerError(e, ImageSource.GALLERY);
+        }
+    }
+
+    private static void onPictureReturnedFromCamera(Activity activity, Callbacks callbacks) {
+        try {
+            File photoFile = EasyImage.takenCameraPicture(activity);
+            callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
+        } catch (Exception e) {
+            callbacks.onImagePickerError(e, ImageSource.CAMERA);
+        }
+    }
 }

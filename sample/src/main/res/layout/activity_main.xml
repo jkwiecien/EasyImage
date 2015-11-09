@@ -30,4 +30,11 @@
         android:drawableLeft="@drawable/ic_insert_photo_black_24dp"
         android:text="Pick from gallery" />
 
+    <Button
+        android:id="@+id/chooser_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_assistant_black_24dp"
+        android:text="Display chooser" />
+
 </LinearLayout>

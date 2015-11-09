@@ -33,18 +33,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    public MainActivity() {
-    }
-
-    @OnClick(R.id.camera_button)
-    protected void onTakePhotoClicked() {
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            EasyImage.openCamera(this);
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -60,9 +48,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick(R.id.camera_button)
+    protected void onTakePhotoClicked() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            EasyImage.openCamera(this);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+        }
+    }
+
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         EasyImage.openGalleryPicker(this);
+    }
+
+    @OnClick(R.id.chooser_button)
+    protected void onChoserClicked() {
+        EasyImage.openChooser(this);
     }
 
     @Override
