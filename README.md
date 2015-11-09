@@ -54,7 +54,7 @@ Library requires permission from your app. Declare it in your ```AndroidMnifest.
 
 ``` if you app targets M and above and declares as using the CAMERA permission which is not granted, then atempting to use this action will result in a SecurityException.``` 
 
-For this reason, if your app uses CAMERA permission, you should check it **aswell** as ```WRITE_EXTERNAL_STORAGE``` before calling ```EasyImage.openCamera()```
+For this reason, if your app uses ```CAMERA``` permission, you should check it **aswell** as ```WRITE_EXTERNAL_STORAGE``` before calling ```EasyImage.openCamera()```
 
 [This library](https://github.com/tajchert/Nammu) will help you with that.
 
