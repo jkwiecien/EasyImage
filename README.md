@@ -4,19 +4,19 @@ EasyImage allow you to eaisly take picture from gallery or camera without creati
   
 #How to use it?
 
-##Taking straight to camera
+####Taking straight to camera
 - ```EasyImage.openCamera(Activity activity);```
 - ```EasyImage.openCamera(Fragment fragment);```
 
-##Taking straight to gallery
+####Taking straight to gallery
 - ```EasyImage.openGalleryPicker(Activity activity);```
 - ```EasyImage.openGalleryPicker(Fragment fragment);```
 
-##Displaying system picker
+####Displaying system picker
 - ```EasyImage.openChooser(Activity activity);```
 - ```EasyImage.openChooser(Fragment fragment);```
 
-Then there is only one thing left to do:
+####Getting the photo file
 
 ```java
 @Override
