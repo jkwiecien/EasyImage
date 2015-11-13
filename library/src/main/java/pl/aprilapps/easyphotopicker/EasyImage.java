@@ -219,7 +219,7 @@ public class EasyImage implements EasyImageConfig {
                     callbacks.onCanceled(ImageSource.GALLERY);
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
                     callbacks.onCanceled(ImageSource.CAMERA);
-                } else if (data == null) {
+                } else if (data == null || data.getData() == null) {
                     callbacks.onCanceled(ImageSource.CAMERA);
                 } else {
                     callbacks.onCanceled(ImageSource.GALLERY);
