@@ -14,8 +14,8 @@ EasyImage allow you to eaisly take picture from gallery or camera without creati
 - ```EasyImage.openGalleryPicker(Fragment fragment);```
 
 ####Displaying system picker
-- ```EasyImage.openChooser(Activity activity);```
-- ```EasyImage.openChooser(Fragment fragment);```
+- ```EasyImage.openChooser(Activity activity, String chooserTitle);```
+- ```EasyImage.openChooser(Fragment fragment, String chooserTitle);```
 
 ####Getting the photo file
 
