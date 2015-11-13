@@ -115,10 +115,6 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooser(Activity activity){
-        openChooser(activity, "Select Source");
-    }
-
     public static void openChooser(Fragment fragment, String chooserTitle) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
@@ -128,10 +124,6 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooser(Fragment fragment){
-        openChooser(fragment, "Select Source");
-    }
-
     public static void openChooser(android.app.Fragment fragment, String chooserTitle) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
@@ -139,10 +131,6 @@ public class EasyImage implements EasyImageConfig {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void openChooser(android.app.Fragment fragment){
-        openChooser(fragment, "Select Source");
     }
 
     public static void openGalleryPicker(Activity activity) {
