@@ -89,7 +89,7 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static Intent createChooserIntent(Context context) throws IOException {
+    private static Intent createChooserIntent(Context context, String chooserTitle) throws IOException {
         Uri outputFileUri = createCameraPictureFile(context);
         List<Intent> cameraIntents = new ArrayList<>();
         Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -106,33 +106,33 @@ public class EasyImage implements EasyImageConfig {
 
         Intent galleryIntent = createGalleryIntent();
 
-        Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+        Intent chooserIntent = Intent.createChooser(galleryIntent, chooserTitle);
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
 
         return chooserIntent;
     }
 
-    public static void openChooser(Activity activity) {
+    public static void openChooser(Activity activity, String chooserTitle) {
         try {
-            Intent intent = createChooserIntent(activity);
+            Intent intent = createChooserIntent(activity, chooserTitle);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooser(Fragment fragment) {
+    public static void openChooser(Fragment fragment, String chooserTitle) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity());
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooser(android.app.Fragment fragment) {
+    public static void openChooser(android.app.Fragment fragment, String chooserTitle) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity());
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();

@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.chooser_button)
     protected void onChoserClicked() {
-        EasyImage.openChooser(this);
+        EasyImage.openChooser(this, "Pick source");
     }
 
     @Override
