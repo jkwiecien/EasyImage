@@ -43,6 +43,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
+    private static final String KEY_LAST_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
 
     private static File tempImageDirectory(Context context) {
         File dir = new File(context.getApplicationContext().getCacheDir(), "Images");
@@ -169,6 +170,7 @@ public class EasyImage implements EasyImageConfig {
         File photoFile = new File(directory, UUID.randomUUID().toString());
         photoFile.createNewFile();
         EasyImage.writeToFile(pictureInputStream, photoFile);
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(KEY_LAST_PHOTO, photoFile.getAbsolutePath()).commit();
         return photoFile;
 
     }
@@ -189,6 +191,8 @@ public class EasyImage implements EasyImageConfig {
             }
             out.close();
             in.close();
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -201,6 +205,7 @@ public class EasyImage implements EasyImageConfig {
         mediaScanIntent.setData(contentUri);
         context.sendBroadcast(mediaScanIntent);
     }
+
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
         if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
@@ -225,6 +230,21 @@ public class EasyImage implements EasyImageConfig {
                     callbacks.onCanceled(ImageSource.GALLERY);
                 }
             }
+        }
+    }
+
+    /**
+     * @param context
+     * @return File containing lastly taken (using camera) photo. Returns null if there was no photo taken or it doesn't exist anymore.
+     */
+    public static File lastlyTakenPhoto(Context context) {
+        String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_PHOTO, null);
+        if (filePath == null) return null;
+        File file = new File(filePath);
+        if (file.exists()) {
+            return file;
+        } else {
+            return null;
         }
     }
 
