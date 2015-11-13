@@ -3,6 +3,7 @@
 EasyImage allow you to eaisly take picture from gallery or camera without creating lots of boilerplate.
   
 #How to use it?
+##Essentials
 
 ####Taking straight to camera
 - ```EasyImage.openCamera(Activity activity);```
@@ -37,7 +38,26 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     });
 }
 ```
-
+##Additional features
+####Removing canceled but captured photo
+If the user takes photo using camera, but then cancels, you might wanna remove that photo from the device.
+Sample app present's the usage:
+```java
+            @Override
+            public void onCanceled(EasyImage.ImageSource source) {
+                //Cancel handling, you might wanna remove taken photo if it was canceled
+                if (source == EasyImage.ImageSource.CAMERA) {
+                    File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);
+                    if (photoFile != null) photoFile.delete();
+                }
+            }
+  ```
+####Changing name of the captured images folder
+All captured with camera images are stored under folder named "EasyImage". If you wish to change it just do the following:
+```java
+        EasyImage.configuration(this)
+                .setImagesFolderName("My app images");
+  ```
 
 #Setup
 
@@ -64,7 +84,7 @@ repositories {
 }
     
 dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.0.8'
+    compile 'com.github.jkwiecien:EasyImage:1.0.9'
 }
 ```
 
