@@ -45,7 +45,7 @@ public class EasyImage implements EasyImageConfig {
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
     private static final String KEY_LAST_CAMERA_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
-    private static String DEFAULT_FOLDER_NAME = "Images";
+    private static String DEFAULT_FOLDER_NAME = "EasyImage";
 
     private static File tempImageDirectory(Context context) {
         File dir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
