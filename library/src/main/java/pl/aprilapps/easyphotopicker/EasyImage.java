@@ -209,7 +209,7 @@ public class EasyImage implements EasyImageConfig {
                     onPictureReturnedFromGallery(data, activity, callbacks);
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
                     onPictureReturnedFromCamera(activity, callbacks);
-                } else if (data == null) {
+                } else if (data == null || data.getData() == null) {
                     onPictureReturnedFromCamera(activity, callbacks);
                 } else {
                     onPictureReturnedFromGallery(data, activity, callbacks);
