@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -43,16 +44,17 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
-    private static final String KEY_LAST_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
+    private static final String KEY_LAST_CAMERA_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
+    private static String DEFAULT_FOLDER_NAME = "Images";
 
     private static File tempImageDirectory(Context context) {
-        File dir = new File(context.getApplicationContext().getCacheDir(), "Images");
+        File dir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
 
-    private static File publicImageDirectory() {
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Images");
+    private static File publicImageDirectory(Context context) {
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getFolderName(context));
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
@@ -65,9 +67,12 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
-        File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory());
+        File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory(context));
         Uri uri = Uri.fromFile(image);
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(KEY_PHOTO_URI, uri.toString()).commit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putString(KEY_PHOTO_URI, uri.toString());
+        editor.putString(KEY_LAST_CAMERA_PHOTO, uri.toString());
+        editor.commit();
         return uri;
     }
 
@@ -170,7 +175,6 @@ public class EasyImage implements EasyImageConfig {
         File photoFile = new File(directory, UUID.randomUUID().toString());
         photoFile.createNewFile();
         EasyImage.writeToFile(pictureInputStream, photoFile);
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(KEY_LAST_PHOTO, photoFile.getAbsolutePath()).commit();
         return photoFile;
 
     }
@@ -237,8 +241,8 @@ public class EasyImage implements EasyImageConfig {
      * @param context
      * @return File containing lastly taken (using camera) photo. Returns null if there was no photo taken or it doesn't exist anymore.
      */
-    public static File lastlyTakenPhoto(Context context) {
-        String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_PHOTO, null);
+    public static File lastlyTakenButCanceledPhoto(Context context) {
+        String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_PHOTO, null);
         if (filePath == null) return null;
         File file = new File(filePath);
         if (file.exists()) {
@@ -263,8 +267,33 @@ public class EasyImage implements EasyImageConfig {
         try {
             File photoFile = EasyImage.takenCameraPicture(activity);
             callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
+            PreferenceManager.getDefaultSharedPreferences(activity).edit().remove(KEY_LAST_CAMERA_PHOTO).commit();
         } catch (Exception e) {
             callbacks.onImagePickerError(e, ImageSource.CAMERA);
+        }
+    }
+
+    private static String getFolderNameKey(Context context) {
+        return context.getPackageName() + ".folder_name";
+    }
+
+    private static String getFolderName(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderNameKey(context), DEFAULT_FOLDER_NAME);
+    }
+
+    public static Configuration configuration(Context context) {
+        return new Configuration(context);
+    }
+
+    public static class Configuration {
+        private Context context;
+
+        private Configuration(Context context) {
+            this.context = context;
+        }
+
+        public void setImagesFolderName(String folderName) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderNameKey(context), folderName).commit();
         }
     }
 }

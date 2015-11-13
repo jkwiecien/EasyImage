@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        EasyImage.configuration(this)
+                .setImagesFolderName("Sample app images");
     }
 
 
@@ -86,7 +89,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCanceled(EasyImage.ImageSource source) {
-                //Cancel handling
+                //Cancel handling, you might wanna remove taken photo if it was canceled
+                if (source == EasyImage.ImageSource.CAMERA) {
+                    File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);
+                    if (photoFile != null) photoFile.delete();
+                }
             }
         });
     }
