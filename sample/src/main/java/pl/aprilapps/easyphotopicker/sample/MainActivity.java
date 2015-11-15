@@ -61,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick(R.id.documents_button)
+    protected void onPickFromDocumentsClicked() {
+        EasyImage.openDocumentsPicker(this);
+    }
+
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         EasyImage.openGalleryPicker(this);
