@@ -13,6 +13,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,12 +68,12 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
-        File image = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory(context));
-        Uri uri = Uri.fromFile(image);
+        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", publicImageDirectory(context));
+        Uri uri = Uri.fromFile(imagePath);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
-        editor.putString(KEY_LAST_CAMERA_PHOTO, uri.toString());
-        editor.commit();
+        editor.putString(KEY_LAST_CAMERA_PHOTO, imagePath.toString());
+        editor.apply();
         return uri;
     }
 
