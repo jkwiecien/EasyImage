@@ -24,6 +24,14 @@
         android:text="Take with camera" />
 
     <Button
+        android:id="@+id/documents_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_documents_black_24dp"
+        android:paddingLeft="8dp"
+        android:text="Pick from docs" />
+
+    <Button
         android:id="@+id/gallery_button"
         android:layout_width="200dp"
         android:layout_height="wrap_content"

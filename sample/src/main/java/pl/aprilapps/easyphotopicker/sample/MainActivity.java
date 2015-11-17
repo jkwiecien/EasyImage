@@ -32,8 +32,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
+        /**
+         * If saving in public app folder inside Pictures by using saveInAppExternalFilesDir,
+         * write permission after SDK 18 is NOT required as can be seen in manifest.
+         *
+         * If saving in the root of sdcard inside Pictures by using saveInRootPicturesDirectory,
+         * permission is required.
+         *
+         * By default, if no configuration is set Images Folder Name will be EasyImage, and save
+         * location will be in the ExternalFilesDir of the app.
+         * */
         EasyImage.configuration(this)
-                .setImagesFolderName("Sample app images");
+                .setImagesFolderName("Sample app images")
+                .saveInAppExternalFilesDir();
+
+//        EasyImage.configuration(this)
+//                .setImagesFolderName("Sample app images")
+//                .saveInRootPicturesDirectory();
     }
 
 
@@ -53,12 +69,21 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.camera_button)
     protected void onTakePhotoClicked() {
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            EasyImage.openCamera(this);
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-        }
+
+        /**Permission check only required if saving pictures to root of sdcard*/
+//        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+//            EasyImage.openCamera(this);
+//        } else {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+//        }
+
+        EasyImage.openCamera(this);
+    }
+
+    @OnClick(R.id.documents_button)
+    protected void onPickFromDocumentsClicked() {
+        EasyImage.openDocumentsPicker(this);
     }
 
     @OnClick(R.id.gallery_button)
@@ -104,5 +129,12 @@ public class MainActivity extends AppCompatActivity {
                 .fit()
                 .centerCrop()
                 .into(imageView);
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Clear any configuration that was done!
+        EasyImage.clearConfiguration(this);
+        super.onDestroy();
     }
 }
