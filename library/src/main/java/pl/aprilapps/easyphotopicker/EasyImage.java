@@ -56,16 +56,13 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static File publicRootPicturesDirectory(Context context) {
-        File dir = new File(Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                getFolderName(context));
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getFolderName(context));
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
 
     private static File publicAppExternalFilesDir(Context context) {
-        File dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                getFolderName(context));
+        File dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), getFolderName(context));
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
@@ -81,17 +78,14 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
-        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg",
-                new File(getFolderLocation(context)));
+        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", new File(getFolderLocation(context)));
         Uri uri = Uri.fromFile(imagePath);
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
         editor.putString(KEY_LAST_CAMERA_PHOTO, imagePath.toString());
         editor.apply();
         return uri;
     }
-
 
     private static Intent createCameraIntent(Context context) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -105,8 +99,7 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static Intent createChooserIntent(Context context, String chooserTitle)
-            throws IOException {
+    private static Intent createChooserIntent(Context context, String chooserTitle) throws IOException {
         Uri outputFileUri = createCameraPictureFile(context);
         List<Intent> cameraIntents = new ArrayList<>();
         Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -115,8 +108,7 @@ public class EasyImage implements EasyImageConfig {
         for (ResolveInfo res : camList) {
             final String packageName = res.activityInfo.packageName;
             final Intent intent = new Intent(captureIntent);
-            intent.setComponent(new ComponentName(res.activityInfo.packageName,
-                    res.activityInfo.name));
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
             intent.setPackage(packageName);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
             cameraIntents.add(intent);
@@ -125,8 +117,7 @@ public class EasyImage implements EasyImageConfig {
         Intent galleryIntent = createDocumentsIntent();
 
         Intent chooserIntent = Intent.createChooser(galleryIntent, chooserTitle);
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents
-                .toArray(new Parcelable[cameraIntents.size()]));
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
 
         return chooserIntent;
     }
@@ -213,8 +204,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     /**
-     * Compared to pickedDocumentsPicture method, this method does not need to create a new temp
-     * file or do any io. File can be retrieved directly.
+     * Compared to pickedDocumentsPicture method, this method does not need to create a new temp file or do any io. File can be retrieved directly.
      *
      * @param context context
      * @param photoPath Uri path to file
@@ -222,8 +212,7 @@ public class EasyImage implements EasyImageConfig {
      * */
     private static File pickedGalleryPicture(Context context, Uri photoPath) throws IOException {
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(photoPath,
-                filePathColumn, null, null, null);
+        Cursor cursor = context.getContentResolver().query(photoPath, filePathColumn, null, null, null);
         if (cursor == null) return null;
         cursor.moveToFirst();
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
@@ -234,8 +223,7 @@ public class EasyImage implements EasyImageConfig {
 
     private static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
         @SuppressWarnings("ConstantConditions")
-        URI imageUri = new URI(PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(KEY_PHOTO_URI, null));
+        URI imageUri = new URI(PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_PHOTO_URI, null));
         notifyGallery(context, imageUri);
         return new File(imageUri);
     }
@@ -266,12 +254,8 @@ public class EasyImage implements EasyImageConfig {
     }
 
 
-    public static void handleActivityResult(int requestCode, int resultCode, Intent data,
-                                            Activity activity, Callbacks callbacks) {
-        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER
-                || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY
-                || requestCode == EasyImageConfig.REQ_TAKE_PICTURE
-                || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+    public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
+        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
                     onPictureReturnedFromDocuments(data, activity, callbacks);
@@ -302,12 +286,10 @@ public class EasyImage implements EasyImageConfig {
 
     /**
      * @param context context
-     * @return File containing lastly taken (using camera) photo. Returns null if there was no
-     * photo taken or it doesn't exist anymore.
+     * @return File containing lastly taken (using camera) photo. Returns null if there was no photo taken or it doesn't exist anymore.
      */
     public static File lastlyTakenButCanceledPhoto(Context context) {
-        String filePath = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(KEY_LAST_CAMERA_PHOTO, null);
+        String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_PHOTO, null);
         if (filePath == null) return null;
         File file = new File(filePath);
         if (file.exists()) {
@@ -317,8 +299,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static void onPictureReturnedFromDocuments(Intent data, Activity activity,
-                                                       Callbacks callbacks) {
+    private static void onPictureReturnedFromDocuments(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImage.pickedDocumentsPicture(activity, photoPath);
@@ -329,8 +310,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static void onPictureReturnedFromGallery(Intent data, Activity activity,
-                                                     Callbacks callbacks) {
+    private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
@@ -345,8 +325,7 @@ public class EasyImage implements EasyImageConfig {
         try {
             File photoFile = EasyImage.takenCameraPicture(activity);
             callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
-            PreferenceManager.getDefaultSharedPreferences(activity).edit()
-                    .remove(KEY_LAST_CAMERA_PHOTO).commit();
+            PreferenceManager.getDefaultSharedPreferences(activity).edit().remove(KEY_LAST_CAMERA_PHOTO).commit();
         } catch (Exception e) {
             e.printStackTrace();
             callbacks.onImagePickerError(e, ImageSource.CAMERA);
@@ -362,19 +341,24 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static String getFolderName(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(getFolderNameKey(context), DEFAULT_FOLDER_NAME);
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderNameKey(context), DEFAULT_FOLDER_NAME);
     }
 
     /**
-     * Default folder location will be inside app public directory. That way write permissions
-     * after SDK 18 aren't required.
+     * Default folder location will be inside app public directory. That way write permissions after SDK 18 aren't required and contents are deleted if app is uninstalled.
      * @param context context
      * */
     private static String getFolderLocation(Context context) {
-        String DEFAULT_FOLDER_LOCATION = publicAppExternalFilesDir(context).getPath();
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(getFolderLocationKey(context), DEFAULT_FOLDER_LOCATION);
+        String defaultFolderLocation = publicAppExternalFilesDir(context).getPath();
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderLocationKey(context), defaultFolderLocation);
+    }
+
+    /**
+     * Method to clear configuration. Would likely be used in onDestroy(), onDestroyView()...
+     * @param context context
+     * */
+    public static void clearConfiguration(Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().remove(getFolderNameKey(context)).remove(getFolderLocationKey(context)).apply();
     }
 
     public static Configuration configuration(Context context) {
@@ -389,22 +373,17 @@ public class EasyImage implements EasyImageConfig {
         }
 
         public Configuration setImagesFolderName(String folderName) {
-            PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putString(getFolderNameKey(context), folderName).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderNameKey(context), folderName).commit();
             return this;
         }
 
         public Configuration saveInRootPicturesDirectory() {
-            PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putString(getFolderLocationKey(context),
-                            publicRootPicturesDirectory(context).toString()).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicRootPicturesDirectory(context).toString()).commit();
             return this;
         }
 
         public Configuration saveInAppExternalFilesDir() {
-            PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putString(getFolderLocationKey(context),
-                            publicAppExternalFilesDir(context).toString()).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicAppExternalFilesDir(context).toString()).commit();
             return this;
         }
     }

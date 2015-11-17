@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
          *
          * If saving in the root of sdcard inside Pictures by using saveInRootPicturesDirectory,
          * permission is required.
+         *
+         * By default, if no configuration is set Images Folder Name will be EasyImage, and save
+         * location will be in the ExternalFilesDir of the app.
          * */
         EasyImage.configuration(this)
                 .setImagesFolderName("Sample app images")
@@ -126,5 +129,12 @@ public class MainActivity extends AppCompatActivity {
                 .fit()
                 .centerCrop()
                 .into(imageView);
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Clear any configuration that was done!
+        EasyImage.clearConfiguration(this);
+        super.onDestroy();
     }
 }

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pl.aprilapps.easyphotopicker.sample">
 
-    <!-- USE BELOW IF SAVING TO PUBLIC APP DATA FOLDER -->
+    <!-- USE BELOW IF SAVING TO PUBLIC APP DATA FOLDER, ABOVE SDK 18 WRITE PERMISSION IS NOT REQUIRED -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
                      android:maxSdkVersion="18" />
 
