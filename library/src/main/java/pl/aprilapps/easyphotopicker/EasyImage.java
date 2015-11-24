@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -194,30 +193,12 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
-    private static File pickedDocumentsPicture(Context context, Uri photoPath) throws IOException {
+    private static File pickedPicture(Context context, Uri photoPath) throws IOException {
         InputStream pictureInputStream = context.getContentResolver().openInputStream(photoPath);
         File directory = EasyImage.tempImageDirectory(context);
         File photoFile = new File(directory, UUID.randomUUID().toString());
         photoFile.createNewFile();
         EasyImage.writeToFile(pictureInputStream, photoFile);
-        return photoFile;
-    }
-
-    /**
-     * Compared to pickedDocumentsPicture method, this method does not need to create a new temp file or do any io. File can be retrieved directly.
-     *
-     * @param context context
-     * @param photoPath Uri path to file
-     * @return File from device
-     * */
-    private static File pickedGalleryPicture(Context context, Uri photoPath) throws IOException {
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(photoPath, filePathColumn, null, null, null);
-        if (cursor == null) return null;
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        File photoFile = new File(cursor.getString(columnIndex));
-        cursor.close();
         return photoFile;
     }
 
@@ -302,7 +283,7 @@ public class EasyImage implements EasyImageConfig {
     private static void onPictureReturnedFromDocuments(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
-            File photoFile = EasyImage.pickedDocumentsPicture(activity, photoPath);
+            File photoFile = EasyImage.pickedPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.DOCUMENTS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -313,7 +294,7 @@ public class EasyImage implements EasyImageConfig {
     private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
-            File photoFile = EasyImage.pickedGalleryPicture(activity, photoPath);
+            File photoFile = EasyImage.pickedPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
         } catch (Exception e) {
             e.printStackTrace();
