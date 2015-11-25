@@ -12,7 +12,7 @@ EasyImage allow you to eaisly take picture from gallery, camera or documents wit
 ####Taking straight to gallery or the gallery picker if there is more than 1 gallery app
 - ```EasyImage.openGallery(Activity activity);```
 - ```EasyImage.openGallery(Fragment fragment);```
-- 
+
 ####Taking straight to documents app
 - ```EasyImage.openDocuments(Activity activity);```
 - ```EasyImage.openDocuments(Fragment fragment);```
