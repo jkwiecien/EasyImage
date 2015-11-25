@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:fitsSystemWindows="true"
+              android:gravity="center"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/image_view"
@@ -22,6 +22,14 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/ic_camera_alt_black_24dp"
         android:text="Take with camera" />
+
+    <Button
+        android:id="@+id/documents_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_documents_black_24dp"
+        android:paddingLeft="8dp"
+        android:text="Pick from docs" />
 
     <Button
         android:id="@+id/gallery_button"
