@@ -148,32 +148,32 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openDocumentsPicker(Activity activity) {
+    public static void openDocuments(Activity activity) {
         Intent intent = createDocumentsIntent();
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openDocumentsPicker(Fragment fragment) {
+    public static void openDocuments(Fragment fragment) {
         Intent intent = createDocumentsIntent();
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openDocumentsPicker(android.app.Fragment fragment) {
+    public static void openDocuments(android.app.Fragment fragment) {
         Intent intent = createDocumentsIntent();
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openGalleryPicker(Activity activity) {
+    public static void openGallery(Activity activity) {
         Intent intent = createGalleryIntent();
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openGalleryPicker(Fragment fragment) {
+    public static void openGallery(Fragment fragment) {
         Intent intent = createGalleryIntent();
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openGalleryPicker(android.app.Fragment fragment) {
+    public static void openGallery(android.app.Fragment fragment) {
         Intent intent = createGalleryIntent();
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
@@ -339,7 +339,10 @@ public class EasyImage implements EasyImageConfig {
      * @param context context
      * */
     public static void clearConfiguration(Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().remove(getFolderNameKey(context)).remove(getFolderLocationKey(context)).apply();
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .remove(getFolderNameKey(context))
+                .remove(getFolderLocationKey(context))
+                .apply();
     }
 
     public static Configuration configuration(Context context) {

@@ -1,11 +1,8 @@
 package pl.aprilapps.easyphotopicker.sample;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
@@ -84,13 +81,13 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.documents_button)
     protected void onPickFromDocumentsClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openDocumentsPicker(this);
+        EasyImage.openDocuments(this);
     }
 
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openGalleryPicker(this);
+        EasyImage.openGallery(this);
     }
 
     @OnClick(R.id.chooser_button)
