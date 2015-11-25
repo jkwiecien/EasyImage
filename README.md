@@ -63,7 +63,10 @@ Sample app present's the usage:
                 //.saveInAppExternalFilesDir() //if you want to use root internal memory for storying images
                 .saveInRootPicturesDirectory(); //if you want to use internal memory for storying images - default
 ```
-Configuration is persisted so if you wan't to clear it before the next use call ```EasyImage.clearConfiguration(Context context);```
+Configuration is persisted so if you wan't to clear it before the next use call 
+```java
+EasyImage.clearConfiguration(Context context);
+```
 
 #Setup
 
