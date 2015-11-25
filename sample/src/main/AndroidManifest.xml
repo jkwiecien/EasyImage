@@ -3,11 +3,12 @@
           package="pl.aprilapps.easyphotopicker.sample">
 
     <!-- USE BELOW IF SAVING TO PUBLIC APP DATA FOLDER, ABOVE SDK 18 WRITE PERMISSION IS NOT REQUIRED -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-                     android:maxSdkVersion="18" />
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"-->
+                     <!--android:maxSdkVersion="18" />-->
 
     <!-- USE BELOW IF SAVING TO ROOT OF SDCARD  -->
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
+    <!-- BELOW PERMISSION MIGHT ALSO BE NEEDED IF OPENING PICTURES FROM A PARTICULAR GALLERY APP SUCH AS ON SAMSUNG PHONES -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"

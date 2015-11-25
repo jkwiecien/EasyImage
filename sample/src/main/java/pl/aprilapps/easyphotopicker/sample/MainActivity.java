@@ -83,11 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.documents_button)
     protected void onPickFromDocumentsClicked() {
+        /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
         EasyImage.openDocumentsPicker(this);
     }
 
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
+        /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
         EasyImage.openGalleryPicker(this);
     }
 
