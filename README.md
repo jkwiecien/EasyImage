@@ -1,6 +1,6 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725)
 # What is it?
-EasyImage allow you to eaisly take picture from gallery or camera without creating lots of boilerplate.
+EasyImage allow you to eaisly take picture from gallery, camera or documents without creating lots of boilerplate.
   
 #How to use it?
 ##Essentials
@@ -9,11 +9,15 @@ EasyImage allow you to eaisly take picture from gallery or camera without creati
 - ```EasyImage.openCamera(Activity activity);```
 - ```EasyImage.openCamera(Fragment fragment);```
 
-####Taking straight to gallery
-- ```EasyImage.openGalleryPicker(Activity activity);```
-- ```EasyImage.openGalleryPicker(Fragment fragment);```
+####Taking straight to gallery or the gallery picker if there is more than 1 gallery app
+- ```EasyImage.openGallery(Activity activity);```
+- ```EasyImage.openGallery(Fragment fragment);```
 
-####Displaying system picker
+####Taking straight to documents app
+- ```EasyImage.openDocuments(Activity activity);```
+- ```EasyImage.openDocuments(Fragment fragment);```
+
+####Displaying system picker to chose from documents or the gallery
 - ```EasyImage.openChooser(Activity activity, String chooserTitle);```
 - ```EasyImage.openChooser(Fragment fragment, String chooserTitle);```
 
@@ -52,12 +56,13 @@ Sample app present's the usage:
                 }
             }
   ```
-####Changing name of the captured images folder
-All captured with camera images are stored under folder named "EasyImage". If you wish to change it just do the following:
+####Additional configuration
 ```java
         EasyImage.configuration(this)
-                .setImagesFolderName("My app images");
-  ```
+                .setImagesFolderName("My app images") //images folder name, default is "EasyImage"
+                //.saveInAppExternalFilesDir() //if you want to use root internal memory for storying images
+                .saveInRootPicturesDirectory(); //if you want to use internal memory for storying images - default
+```
 
 #Setup
 
@@ -84,7 +89,7 @@ repositories {
 }
     
 dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.0.9'
+    compile 'com.github.jkwiecien:EasyImage:1.1.0'
 }
 ```
 
