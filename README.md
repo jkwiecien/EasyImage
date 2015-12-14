@@ -17,9 +17,13 @@ EasyImage allow you to eaisly take picture from gallery, camera or documents wit
 - ```EasyImage.openDocuments(Activity activity);```
 - ```EasyImage.openDocuments(Fragment fragment);```
 
-####Displaying system picker to chose from documents or the gallery
+####Displaying system picker to chose from camera or documents/gallery app
 - ```EasyImage.openChooser(Activity activity, String chooserTitle);```
 - ```EasyImage.openChooser(Fragment fragment, String chooserTitle);```
+- 
+####Displaying system picker to chose from camera or gallery app
+- ```EasyImage.openChooser(Activity activity, String chooserTitle, true);```
+- ```EasyImage.openChooser(Fragment fragment, String chooserTitle, true);```
 
 ####Getting the photo file
 
