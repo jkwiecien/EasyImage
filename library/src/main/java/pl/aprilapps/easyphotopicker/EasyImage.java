@@ -8,17 +8,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -48,33 +44,7 @@ public class EasyImage implements EasyImageConfig {
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
     private static final String KEY_LAST_CAMERA_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
-    private static String DEFAULT_FOLDER_NAME = "EasyImage";
 
-    private static File tempImageDirectory(Context context) {
-        File dir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
-        if (!dir.exists()) dir.mkdirs();
-        return dir;
-    }
-
-    private static File publicRootDir(Context context) {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-    }
-
-    private static File publicRootPicturesDir(Context context) {
-        File dir = new File(publicRootDir(context), getFolderName(context));
-        if (!dir.exists()) dir.mkdirs();
-        return dir;
-    }
-
-    private static File publicAppExternalDir(Context context) {
-        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    }
-
-    private static File publicAppExternalFilesDir(Context context) {
-        File dir = new File(publicAppExternalDir(context), getFolderName(context));
-        if (!dir.exists()) dir.mkdirs();
-        return dir;
-    }
 
     private static Intent createDocumentsIntent() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -87,7 +57,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
-        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", new File(getFolderLocation(context), getFolderName(context)));
+        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context)));
         Uri uri = Uri.fromFile(imagePath);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
@@ -239,14 +209,6 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
-    private static File pickedPicture(Context context, Uri photoPath) throws IOException {
-        InputStream pictureInputStream = context.getContentResolver().openInputStream(photoPath);
-        File directory = EasyImage.tempImageDirectory(context);
-        File photoFile = new File(directory, UUID.randomUUID().toString());
-        photoFile.createNewFile();
-        EasyImage.writeToFile(pictureInputStream, photoFile);
-        return photoFile;
-    }
 
     private static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
         @SuppressWarnings("ConstantConditions")
@@ -255,22 +217,6 @@ public class EasyImage implements EasyImageConfig {
         return new File(imageUri);
     }
 
-    private static void writeToFile(InputStream in, File file) {
-        try {
-            OutputStream out = new FileOutputStream(file);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            out.close();
-            in.close();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private static void notifyGallery(Context context, URI pictureUri) throws URISyntaxException {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -329,7 +275,7 @@ public class EasyImage implements EasyImageConfig {
     private static void onPictureReturnedFromDocuments(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
-            File photoFile = EasyImage.pickedPicture(activity, photoPath);
+            File photoFile = EasyImageFiles.pickedPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.DOCUMENTS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -340,7 +286,7 @@ public class EasyImage implements EasyImageConfig {
     private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
-            File photoFile = EasyImage.pickedPicture(activity, photoPath);
+            File photoFile = EasyImageFiles.pickedPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
         } catch (Exception e) {
             e.printStackTrace();
@@ -359,27 +305,6 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static String getFolderNameKey(Context context) {
-        return context.getPackageName() + ".folder_name";
-    }
-
-    private static String getFolderLocationKey(Context context) {
-        return context.getPackageName() + ".folder_location";
-    }
-
-    private static String getFolderName(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderNameKey(context), DEFAULT_FOLDER_NAME);
-    }
-
-    /**
-     * Default folder location will be inside app public directory. That way write permissions after SDK 18 aren't required and contents are deleted if app is uninstalled.
-     *
-     * @param context context
-     */
-    private static String getFolderLocation(Context context) {
-        String defaultFolderLocation = publicAppExternalDir(context).getPath();
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderLocationKey(context), defaultFolderLocation);
-    }
 
     /**
      * Method to clear configuration. Would likely be used in onDestroy(), onDestroyView()...
@@ -388,8 +313,8 @@ public class EasyImage implements EasyImageConfig {
      */
     public static void clearConfiguration(Context context) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .remove(getFolderNameKey(context))
-                .remove(getFolderLocationKey(context))
+                .remove(EasyImageFiles.getFolderNameKey(context))
+                .remove(EasyImageFiles.getFolderLocationKey(context))
                 .apply();
     }
 
@@ -405,17 +330,23 @@ public class EasyImage implements EasyImageConfig {
         }
 
         public Configuration setImagesFolderName(String folderName) {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderNameKey(context), folderName).commit();
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit().putString(EasyImageFiles.getFolderNameKey(context), folderName)
+                    .commit();
             return this;
         }
 
         public Configuration saveInRootPicturesDirectory() {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicRootDir(context).toString()).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    .putString(EasyImageFiles.getFolderLocationKey(context), EasyImageFiles.publicRootDir(context).toString())
+                    .commit();
             return this;
         }
 
         public Configuration saveInAppExternalFilesDir() {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicAppExternalDir(context).toString()).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    .putString(EasyImageFiles.getFolderLocationKey(context), EasyImageFiles.publicAppExternalDir(context).toString())
+                    .commit();
             return this;
         }
     }
