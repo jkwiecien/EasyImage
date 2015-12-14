@@ -28,7 +28,7 @@ EasyImage allow you to eaisly take picture from gallery, camera or documents wit
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
+    EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
         @Override
         public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
             //Some error handling
