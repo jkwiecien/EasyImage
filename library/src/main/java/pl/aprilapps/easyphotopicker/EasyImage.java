@@ -56,14 +56,22 @@ public class EasyImage implements EasyImageConfig {
         return dir;
     }
 
-    private static File publicRootPicturesDirectory(Context context) {
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getFolderName(context));
+    private static File publicRootDir(Context context) {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    }
+
+    private static File publicRootPicturesDir(Context context) {
+        File dir = new File(publicRootDir(context), getFolderName(context));
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
 
+    private static File publicAppExternalDir(Context context) {
+        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    }
+
     private static File publicAppExternalFilesDir(Context context) {
-        File dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), getFolderName(context));
+        File dir = new File(publicAppExternalDir(context), getFolderName(context));
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
@@ -79,7 +87,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
-        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", new File(getFolderLocation(context)));
+        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", new File(getFolderLocation(context), getFolderName(context)));
         Uri uri = Uri.fromFile(imagePath);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
@@ -290,7 +298,7 @@ public class EasyImage implements EasyImageConfig {
             } else {
                 if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
                     callbacks.onCanceled(ImageSource.DOCUMENTS);
-                }else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
+                } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
                     callbacks.onCanceled(ImageSource.GALLERY);
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
                     callbacks.onCanceled(ImageSource.CAMERA);
@@ -365,17 +373,19 @@ public class EasyImage implements EasyImageConfig {
 
     /**
      * Default folder location will be inside app public directory. That way write permissions after SDK 18 aren't required and contents are deleted if app is uninstalled.
+     *
      * @param context context
-     * */
+     */
     private static String getFolderLocation(Context context) {
-        String defaultFolderLocation = publicAppExternalFilesDir(context).getPath();
+        String defaultFolderLocation = publicAppExternalDir(context).getPath();
         return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderLocationKey(context), defaultFolderLocation);
     }
 
     /**
      * Method to clear configuration. Would likely be used in onDestroy(), onDestroyView()...
+     *
      * @param context context
-     * */
+     */
     public static void clearConfiguration(Context context) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .remove(getFolderNameKey(context))
@@ -400,12 +410,12 @@ public class EasyImage implements EasyImageConfig {
         }
 
         public Configuration saveInRootPicturesDirectory() {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicRootPicturesDirectory(context).toString()).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicRootDir(context).toString()).commit();
             return this;
         }
 
         public Configuration saveInAppExternalFilesDir() {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicAppExternalFilesDir(context).toString()).commit();
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(getFolderLocationKey(context), publicAppExternalDir(context).toString()).commit();
             return this;
         }
     }
