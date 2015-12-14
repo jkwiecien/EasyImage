@@ -19,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 
 /**
@@ -57,7 +56,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
-        File imagePath = File.createTempFile(UUID.randomUUID().toString(), ".jpg", new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context)));
+        File imagePath = EasyImageFiles.getCameraPicturesLocation(context);
         Uri uri = Uri.fromFile(imagePath);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
