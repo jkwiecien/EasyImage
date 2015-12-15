@@ -7,6 +7,6 @@ public interface BundleKeys {
 
     String FOLDER_NAME = "pl.aprilapps.folder_name";
     String FOLDER_LOCATION = "pl.aprilapps.folder_location";
-    String FOLDER_PUBLIC_TEMP = "pl.aprilapps.public_temp";
+    String PUBLIC_TEMP = "pl.aprilapps.public_temp";
 
 }

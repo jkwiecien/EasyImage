@@ -18,6 +18,7 @@ import java.util.UUID;
 class EasyImageFiles {
 
     public static String DEFAULT_FOLDER_NAME = "EasyImage";
+    public static String TEMP_FOLDER_NAME = "Temp";
 
 
     public static String getFolderName(Context context) {
@@ -25,9 +26,8 @@ class EasyImageFiles {
     }
 
     public static File tempImageDirectory(Context context) {
-        File dir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
-        if (!dir.exists()) dir.mkdirs();
-        return dir;
+        boolean publicTemp = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.PUBLIC_TEMP, false);
+        return publicTemp ? publicTemplDir(context) : privateTemplDir(context);
     }
 
     public static File publicRootDir(Context context) {
@@ -42,6 +42,17 @@ class EasyImageFiles {
 
     public static File publicAppExternalDir(Context context) {
         return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    }
+
+    public static File publicTemplDir(Context context) {
+        File cameraPicturesDir = new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context));
+        File publicTempDir = new File(cameraPicturesDir, TEMP_FOLDER_NAME);
+        if (!publicTempDir.exists()) publicTempDir.mkdirs();
+        return publicTempDir;
+    }
+
+    private static File privateTemplDir(Context context) {
+        return new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
     }
 
 //    public static File publicAppExternalFilesDir(Context context) {

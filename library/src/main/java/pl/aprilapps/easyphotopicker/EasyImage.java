@@ -304,6 +304,14 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    public static void clearPublicTemp(Context context) {
+        List<File> tempFiles = new ArrayList<>();
+        File[] files = EasyImageFiles.publicTemplDir(context).listFiles();
+        for (File file : files) {
+            file.delete();
+        }
+    }
+
 
     /**
      * Method to clear configuration. Would likely be used in onDestroy(), onDestroyView()...
@@ -349,5 +357,19 @@ public class EasyImage implements EasyImageConfig {
             return this;
         }
 
+
+        /**
+         * Use this method if you want your picked gallery or documents pictures to be duplicated into public, other apps accessible, directory.
+         * You'll have to take care of removing that file on your own after you're done with it. Use EasyImage.clearPublicTemp() method for that.
+         * If you don't delete them they could show up in user galleries.
+         *
+         * @return modified Configuration object
+         */
+        public Configuration setCopyExistingPicturesToPublicLocation(boolean copyToPublicLocation) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    .putBoolean(BundleKeys.PUBLIC_TEMP, copyToPublicLocation)
+                    .commit();
+            return this;
+        }
     }
 }

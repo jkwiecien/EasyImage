@@ -22,8 +22,6 @@ import pl.tajchert.nammu.PermissionCallback;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
-
     @Bind(R.id.image_view)
     protected ImageView imageView;
 
@@ -46,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
          * */
         EasyImage.configuration(this)
                 .setImagesFolderName("Sample app images")
-                .saveInAppExternalFilesDir();
+                .saveInAppExternalFilesDir()
+                .setCopyExistingPicturesToPublicLocation(true);
 
 //        EasyImage.configuration(this)
 //                .setImagesFolderName("Sample app images")
