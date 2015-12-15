@@ -274,7 +274,7 @@ public class EasyImage implements EasyImageConfig {
     private static void onPictureReturnedFromDocuments(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
-            File photoFile = EasyImageFiles.pickedPicture(activity, photoPath);
+            File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.DOCUMENTS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,7 +285,7 @@ public class EasyImage implements EasyImageConfig {
     private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
-            File photoFile = EasyImageFiles.pickedPicture(activity, photoPath);
+            File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
         } catch (Exception e) {
             e.printStackTrace();
@@ -312,8 +312,8 @@ public class EasyImage implements EasyImageConfig {
      */
     public static void clearConfiguration(Context context) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .remove(EasyImageFiles.getFolderNameKey(context))
-                .remove(EasyImageFiles.getFolderLocationKey(context))
+                .remove(BundleKeys.FOLDER_NAME)
+                .remove(BundleKeys.FOLDER_LOCATION)
                 .apply();
     }
 
@@ -330,23 +330,24 @@ public class EasyImage implements EasyImageConfig {
 
         public Configuration setImagesFolderName(String folderName) {
             PreferenceManager.getDefaultSharedPreferences(context)
-                    .edit().putString(EasyImageFiles.getFolderNameKey(context), folderName)
+                    .edit().putString(BundleKeys.FOLDER_NAME, folderName)
                     .commit();
             return this;
         }
 
         public Configuration saveInRootPicturesDirectory() {
             PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putString(EasyImageFiles.getFolderLocationKey(context), EasyImageFiles.publicRootDir(context).toString())
+                    .putString(BundleKeys.FOLDER_LOCATION, EasyImageFiles.publicRootDir(context).toString())
                     .commit();
             return this;
         }
 
         public Configuration saveInAppExternalFilesDir() {
             PreferenceManager.getDefaultSharedPreferences(context).edit()
-                    .putString(EasyImageFiles.getFolderLocationKey(context), EasyImageFiles.publicAppExternalDir(context).toString())
+                    .putString(BundleKeys.FOLDER_LOCATION, EasyImageFiles.publicAppExternalDir(context).toString())
                     .commit();
             return this;
         }
+
     }
 }

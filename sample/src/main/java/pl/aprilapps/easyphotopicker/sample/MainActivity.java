@@ -1,8 +1,10 @@
 package pl.aprilapps.easyphotopicker.sample;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
@@ -15,6 +17,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
+import pl.tajchert.nammu.Nammu;
+import pl.tajchert.nammu.PermissionCallback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,35 +57,51 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // permission was granted
-                EasyImage.openCamera(this);
-            } else {
-                // permission denied, boo!
-            }
-        }
+        Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @OnClick(R.id.camera_button)
     protected void onTakePhotoClicked() {
 
         /**Permission check only required if saving pictures to root of sdcard*/
-//        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-//            EasyImage.openCamera(this);
-//        } else {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-//        }
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            EasyImage.openCamera(this);
+        } else {
+            Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
+                @Override
+                public void permissionGranted() {
+                    EasyImage.openCamera(MainActivity.this);
+                }
 
-        EasyImage.openCamera(this);
+                @Override
+                public void permissionRefused() {
+
+                }
+            });
+        }
     }
 
     @OnClick(R.id.documents_button)
     protected void onPickFromDocumentsClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openDocuments(this);
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            EasyImage.openDocuments(this);
+        } else {
+            Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
+                @Override
+                public void permissionGranted() {
+                    EasyImage.openDocuments(MainActivity.this);
+                }
+
+                @Override
+                public void permissionRefused() {
+
+                }
+            });
+        }
     }
 
     @OnClick(R.id.gallery_button)

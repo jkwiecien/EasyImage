@@ -19,16 +19,9 @@ class EasyImageFiles {
 
     public static String DEFAULT_FOLDER_NAME = "EasyImage";
 
-    public static String getFolderNameKey(Context context) {
-        return context.getPackageName() + ".folder_name";
-    }
-
-    public static String getFolderLocationKey(Context context) {
-        return context.getPackageName() + ".folder_location";
-    }
 
     public static String getFolderName(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderNameKey(context), DEFAULT_FOLDER_NAME);
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(BundleKeys.FOLDER_NAME, DEFAULT_FOLDER_NAME);
     }
 
     public static File tempImageDirectory(Context context) {
@@ -74,8 +67,8 @@ class EasyImageFiles {
         }
     }
 
-    public static File pickedPicture(Context context, Uri photoPath) throws IOException {
-        InputStream pictureInputStream = context.getContentResolver().openInputStream(photoPath);
+    public static File pickedExistingPicture(Context context, Uri photoUri) throws IOException {
+        InputStream pictureInputStream = context.getContentResolver().openInputStream(photoUri);
         File directory = tempImageDirectory(context);
         File photoFile = new File(directory, UUID.randomUUID().toString());
         photoFile.createNewFile();
@@ -90,7 +83,7 @@ class EasyImageFiles {
      */
     public static String getFolderLocation(Context context) {
         String defaultFolderLocation = publicAppExternalDir(context).getPath();
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(getFolderLocationKey(context), defaultFolderLocation);
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(BundleKeys.FOLDER_LOCATION, defaultFolderLocation);
     }
 
     public static File getCameraPicturesLocation(Context context) throws IOException {
