@@ -322,6 +322,7 @@ public class EasyImage implements EasyImageConfig {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .remove(BundleKeys.FOLDER_NAME)
                 .remove(BundleKeys.FOLDER_LOCATION)
+                .remove(BundleKeys.PUBLIC_TEMP)
                 .apply();
     }
 
