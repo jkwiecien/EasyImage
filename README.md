@@ -17,9 +17,13 @@ EasyImage allow you to eaisly take picture from gallery, camera or documents wit
 - ```EasyImage.openDocuments(Activity activity);```
 - ```EasyImage.openDocuments(Fragment fragment);```
 
-####Displaying system picker to chose from documents or the gallery
+####Displaying system picker to chose from camera or documents/gallery app
 - ```EasyImage.openChooser(Activity activity, String chooserTitle);```
 - ```EasyImage.openChooser(Fragment fragment, String chooserTitle);```
+
+####Displaying system picker to chose from camera or gallery app
+- ```EasyImage.openChooser(Activity activity, String chooserTitle, true);```
+- ```EasyImage.openChooser(Fragment fragment, String chooserTitle, true);```
 
 ####Getting the photo file
 
@@ -28,7 +32,7 @@ EasyImage allow you to eaisly take picture from gallery, camera or documents wit
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    EasyImage.handleActivityResult(requestCode, resultCode, data, this, new EasyImage.Callbacks() {
+    EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
         @Override
         public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
             //Some error handling
@@ -96,7 +100,7 @@ repositories {
 }
     
 dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.1.0'
+    compile 'com.github.jkwiecien:EasyImage:1.1.1'
 }
 ```
 
