@@ -52,7 +52,9 @@ class EasyImageFiles {
     }
 
     private static File privateTemplDir(Context context) {
-        return new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
+        File privateTempDir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
+        if (!privateTempDir.exists()) privateTempDir.mkdirs();
+        return privateTempDir;
     }
 
 //    public static File publicAppExternalFilesDir(Context context) {
