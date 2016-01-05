@@ -1,6 +1,6 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725)
 # What is it?
-EasyImage allow you to eaisly take picture from gallery, camera or documents without creating lots of boilerplate.
+EasyImage allow you to easily take picture from gallery, camera or documents without creating lots of boilerplate.
   
 #How to use it?
 ##Essentials
