@@ -27,7 +27,9 @@ class EasyImageFiles {
 
     public static File tempImageDirectory(Context context) {
         boolean publicTemp = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.PUBLIC_TEMP, false);
-        return publicTemp ? publicTemplDir(context) : privateTemplDir(context);
+        File dir = publicTemp ? publicTemplDir(context) : privateTemplDir(context);
+        if (!dir.exists()) dir.mkdirs();
+        return dir;
     }
 
     public static File publicRootDir(Context context) {
