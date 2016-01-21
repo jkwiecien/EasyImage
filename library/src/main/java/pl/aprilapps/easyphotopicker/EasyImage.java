@@ -29,6 +29,11 @@ public class EasyImage implements EasyImageConfig {
 
     private static final boolean SHOW_GALLERY_IN_CHOOSER = false;
 
+    private static int REQ_PICK_PICTURE_FROM_DOCUMENTS_C = -1;
+    private static int REQ_PICK_PICTURE_FROM_GALLERY_C = -1;
+    private static int REQ_TAKE_PICTURE_C = -1;
+    private static int REQ_SOURCE_CHOOSER_C = -1;
+
     public enum ImageSource {
         GALLERY, DOCUMENTS, CAMERA
     }
@@ -37,6 +42,8 @@ public class EasyImage implements EasyImageConfig {
         void onImagePickerError(Exception e, ImageSource source);
 
         void onImagePicked(File imageFile, ImageSource source);
+
+        void onImagePickedWithRequestCode(File imageFile, ImageSource source, int requestCode);
 
         void onCanceled(ImageSource source);
     }
@@ -118,10 +125,30 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    public static void openChooser(Activity activity, String chooserTitle, int requestCode) {
+        try {
+            REQ_SOURCE_CHOOSER_C = requestCode;
+            Intent intent = createChooserIntent(activity, chooserTitle);
+            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER_C);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void openChooser(Fragment fragment, String chooserTitle) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openChooser(Fragment fragment, String chooserTitle, int requestCode) {
+        try {
+            REQ_SOURCE_CHOOSER_C = requestCode;
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER_C);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,10 +163,30 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    public static void openChooser(android.app.Fragment fragment, String chooserTitle, int requestCode) {
+        try {
+            REQ_SOURCE_CHOOSER_C = requestCode;
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER_C);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void openChooser(Activity activity, String chooserTitle, boolean showGallery) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, showGallery);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openChooser(Activity activity, String chooserTitle, boolean showGallery, int requestCode) {
+        try {
+            REQ_SOURCE_CHOOSER_C = requestCode;
+            Intent intent = createChooserIntent(activity, chooserTitle, showGallery);
+            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER_C);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -154,10 +201,30 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    public static void openChooser(Fragment fragment, String chooserTitle, boolean showGallery, int requestCode) {
+        try {
+            REQ_SOURCE_CHOOSER_C = requestCode;
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, showGallery);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER_C);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void openChooser(android.app.Fragment fragment, String chooserTitle, boolean showGallery) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, showGallery);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void openChooser(android.app.Fragment fragment, String chooserTitle, boolean showGallery, int requestCode) {
+        try {
+            REQ_SOURCE_CHOOSER_C = requestCode;
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, showGallery);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER_C);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -168,9 +235,21 @@ public class EasyImage implements EasyImageConfig {
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
+    public static void openDocuments(Activity activity, int requestCode) {
+        REQ_PICK_PICTURE_FROM_DOCUMENTS_C = requestCode;
+        Intent intent = createDocumentsIntent();
+        activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS_C);
+    }
+
     public static void openDocuments(Fragment fragment) {
         Intent intent = createDocumentsIntent();
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
+    }
+
+    public static void openDocuments(Fragment fragment, int requestCode) {
+        REQ_PICK_PICTURE_FROM_DOCUMENTS_C = requestCode;
+        Intent intent = createDocumentsIntent();
+        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS_C);
     }
 
     public static void openDocuments(android.app.Fragment fragment) {
@@ -178,9 +257,21 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
+    public static void openDocuments(android.app.Fragment fragment, int requestCode) {
+        REQ_PICK_PICTURE_FROM_DOCUMENTS_C = requestCode;
+        Intent intent = createDocumentsIntent();
+        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS_C);
+    }
+
     public static void openGallery(Activity activity) {
         Intent intent = createGalleryIntent();
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
+    }
+
+    public static void openGallery(Activity activity, int requestCode) {
+        REQ_PICK_PICTURE_FROM_GALLERY_C = requestCode;
+        Intent intent = createGalleryIntent();
+        activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY_C);
     }
 
     public static void openGallery(Fragment fragment) {
@@ -188,9 +279,21 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
+    public static void openGallery(Fragment fragment, int requestCode) {
+        REQ_PICK_PICTURE_FROM_GALLERY_C = requestCode;
+        Intent intent = createGalleryIntent();
+        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY_C);
+    }
+
     public static void openGallery(android.app.Fragment fragment) {
         Intent intent = createGalleryIntent();
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
+    }
+
+    public static void openGallery(android.app.Fragment fragment, int requestCode) {
+        REQ_PICK_PICTURE_FROM_GALLERY_C = requestCode;
+        Intent intent = createGalleryIntent();
+        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY_C);
     }
 
     public static void openCamera(Activity activity) {
@@ -198,9 +301,21 @@ public class EasyImage implements EasyImageConfig {
         activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
+    public static void openCamera(Activity activity, int requestCode) {
+        REQ_TAKE_PICTURE_C = requestCode;
+        Intent intent = createCameraIntent(activity);
+        activity.startActivityForResult(intent, REQ_TAKE_PICTURE_C);
+    }
+
     public static void openCamera(Fragment fragment) {
         Intent intent = createCameraIntent(fragment.getActivity());
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
+    }
+
+    public static void openCamera(Fragment fragment, int requestCode) {
+        REQ_TAKE_PICTURE_C = requestCode;
+        Intent intent = createCameraIntent(fragment.getActivity());
+        fragment.startActivityForResult(intent, REQ_TAKE_PICTURE_C);
     }
 
     public static void openCamera(android.app.Fragment fragment) {
@@ -208,6 +323,11 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
+    public static void openCamera(android.app.Fragment fragment, int requestCode) {
+        REQ_TAKE_PICTURE_C = requestCode;
+        Intent intent = createCameraIntent(fragment.getActivity());
+        fragment.startActivityForResult(intent, REQ_TAKE_PICTURE_C);
+    }
 
     private static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
         @SuppressWarnings("ConstantConditions")
@@ -227,14 +347,29 @@ public class EasyImage implements EasyImageConfig {
 
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
-        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER
+                || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY
+                || requestCode == EasyImageConfig.REQ_TAKE_PICTURE
+                || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS
+                || (
+                    REQ_SOURCE_CHOOSER_C != -1
+                            || REQ_TAKE_PICTURE_C != -1
+                            || REQ_PICK_PICTURE_FROM_GALLERY_C != -1
+                            || REQ_PICK_PICTURE_FROM_DOCUMENTS_C != -1
+                )) {
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
                     onPictureReturnedFromDocuments(data, activity, callbacks);
+                } else if(REQ_PICK_PICTURE_FROM_DOCUMENTS_C != -1) {
+                    onPictureReturnedFromDocuments(data, activity, callbacks, REQ_PICK_PICTURE_FROM_DOCUMENTS_C);
                 } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
                     onPictureReturnedFromGallery(data, activity, callbacks);
+                } else if(REQ_PICK_PICTURE_FROM_GALLERY_C != -1){
+                    onPictureReturnedFromGallery(data, activity, callbacks, REQ_PICK_PICTURE_FROM_GALLERY_C);
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
                     onPictureReturnedFromCamera(activity, callbacks);
+                } else if(REQ_TAKE_PICTURE_C != -1) {
+                    onPictureReturnedFromCamera(activity, callbacks, REQ_TAKE_PICTURE_C);
                 } else if (data == null || data.getData() == null) {
                     onPictureReturnedFromCamera(activity, callbacks);
                 } else {
@@ -282,6 +417,17 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    private static void onPictureReturnedFromDocuments(Intent data, Activity activity, Callbacks callbacks, int requestCode) {
+        try {
+            Uri photoPath = data.getData();
+            File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
+            callbacks.onImagePickedWithRequestCode(photoFile, ImageSource.DOCUMENTS, requestCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            callbacks.onImagePickerError(e, ImageSource.DOCUMENTS);
+        }
+    }
+
     private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
@@ -293,10 +439,32 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks, int requestCode) {
+        try {
+            Uri photoPath = data.getData();
+            File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
+            callbacks.onImagePickedWithRequestCode(photoFile, ImageSource.GALLERY, requestCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            callbacks.onImagePickerError(e, ImageSource.GALLERY);
+        }
+    }
+
     private static void onPictureReturnedFromCamera(Activity activity, Callbacks callbacks) {
         try {
             File photoFile = EasyImage.takenCameraPicture(activity);
             callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
+            PreferenceManager.getDefaultSharedPreferences(activity).edit().remove(KEY_LAST_CAMERA_PHOTO).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            callbacks.onImagePickerError(e, ImageSource.CAMERA);
+        }
+    }
+
+    private static void onPictureReturnedFromCamera(Activity activity, Callbacks callbacks, int requestCode) {
+        try {
+            File photoFile = EasyImage.takenCameraPicture(activity);
+            callbacks.onImagePickedWithRequestCode(photoFile, ImageSource.CAMERA,requestCode);
             PreferenceManager.getDefaultSharedPreferences(activity).edit().remove(KEY_LAST_CAMERA_PHOTO).commit();
         } catch (Exception e) {
             e.printStackTrace();

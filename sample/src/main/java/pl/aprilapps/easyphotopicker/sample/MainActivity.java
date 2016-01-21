@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         /**Permission check only required if saving pictures to root of sdcard*/
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            EasyImage.openCamera(this);
+            EasyImage.openCamera(this,111);
         } else {
             Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
                 @Override
@@ -106,17 +106,17 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openGallery(this);
+        EasyImage.openGallery(this,222);
     }
 
     @OnClick(R.id.chooser_button)
     protected void onChooserClicked() {
-        EasyImage.openChooser(this, "Pick source");
+        EasyImage.openChooser(this, "Pick source", 333);
     }
 
     @OnClick(R.id.chooser_button2)
     protected void onChooserWithGalleryClicked() {
-        EasyImage.openChooser(this, "Pick source", true);
+        EasyImage.openChooser(this, "Pick source", true, 444);
     }
 
     @Override
@@ -133,6 +133,23 @@ public class MainActivity extends AppCompatActivity {
             public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
                 //Handle the image
                 onPhotoReturned(imageFile);
+            }
+
+            @Override
+            public void onImagePickedWithRequestCode(File imageFile, EasyImage.ImageSource source, int requestCode) {
+                if(requestCode == 111){
+                    //We took a picture with our own request code.
+                    onPhotoReturned(imageFile);
+                }else if(requestCode == 222){
+                    //We picked from Gallery with our own request code.
+                    onPhotoReturned(imageFile);
+                }else if(requestCode == 333) {
+                    //We picked from chooser with our own request code.
+                    onPhotoReturned(imageFile);
+                }else if(requestCode == 444){
+                    //We picked from chooser with Gallery shown, with our own request code.
+                    onPhotoReturned(imageFile);
+                }
             }
 
             @Override
