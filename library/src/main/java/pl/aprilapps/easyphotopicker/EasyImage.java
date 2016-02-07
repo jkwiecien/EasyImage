@@ -109,7 +109,7 @@ public class EasyImage implements EasyImageConfig {
         return chooserIntent;
     }
 
-    public static void openChooser(Activity activity, String chooserTitle) {
+    public static void openChooserWithDocuments(Activity activity, String chooserTitle) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -118,7 +118,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooser(Fragment fragment, String chooserTitle) {
+    public static void openChooserWithDocuments(Fragment fragment, String chooserTitle) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -127,7 +127,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooser(android.app.Fragment fragment, String chooserTitle) {
+    public static void openChooserWithDocuments(android.app.Fragment fragment, String chooserTitle) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -136,27 +136,27 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooser(Activity activity, String chooserTitle, boolean showGallery) {
+    public static void openChooserWithGallery(Activity activity, String chooserTitle) {
         try {
-            Intent intent = createChooserIntent(activity, chooserTitle, showGallery);
+            Intent intent = createChooserIntent(activity, chooserTitle, true);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooser(Fragment fragment, String chooserTitle, boolean showGallery) {
+    public static void openChooserWithGallery(Fragment fragment, String chooserTitle) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, showGallery);
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooser(android.app.Fragment fragment, String chooserTitle, boolean showGallery) {
+    public static void openChooserWithGallery(android.app.Fragment fragment, String chooserTitle) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, showGallery);
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
