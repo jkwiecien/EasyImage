@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
         /**Permission check only required if saving pictures to root of sdcard*/
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            EasyImage.openCamera(this);
+            EasyImage.openCamera(this, 0);
         } else {
             Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
                 @Override
                 public void permissionGranted() {
-                    EasyImage.openCamera(MainActivity.this);
+                    EasyImage.openCamera(MainActivity.this, 0);
                 }
 
                 @Override
@@ -87,12 +87,12 @@ public class MainActivity extends AppCompatActivity {
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            EasyImage.openDocuments(this);
+            EasyImage.openDocuments(this, 0);
         } else {
             Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
                 @Override
                 public void permissionGranted() {
-                    EasyImage.openDocuments(MainActivity.this);
+                    EasyImage.openDocuments(MainActivity.this, 0);
                 }
 
                 @Override
@@ -106,17 +106,17 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openGallery(this);
+        EasyImage.openGallery(this, 0);
     }
 
     @OnClick(R.id.chooser_button)
     protected void onChooserClicked() {
-        EasyImage.openChooserWithDocuments(this, "Pick source");
+        EasyImage.openChooserWithDocuments(this, "Pick source", 0);
     }
 
     @OnClick(R.id.chooser_button2)
     protected void onChooserWithGalleryClicked() {
-        EasyImage.openChooserWithGallery(this, "Pick source");
+        EasyImage.openChooserWithGallery(this, "Pick source", 0);
     }
 
     @Override

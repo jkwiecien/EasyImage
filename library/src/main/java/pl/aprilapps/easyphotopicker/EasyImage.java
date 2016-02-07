@@ -43,17 +43,7 @@ public class EasyImage implements EasyImageConfig {
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
     private static final String KEY_LAST_CAMERA_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
-
-
-    private static Intent createDocumentsIntent() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        return intent;
-    }
-
-    private static Intent createGalleryIntent() {
-        return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-    }
+    private static final String KEY_TYPE = "pl.aprilapps.easyphotopicker.type";
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
         File imagePath = EasyImageFiles.getCameraPicturesLocation(context);
@@ -65,7 +55,21 @@ public class EasyImage implements EasyImageConfig {
         return uri;
     }
 
-    private static Intent createCameraIntent(Context context) {
+    private static Intent createDocumentsIntent(Context context, int type) {
+        storeType(context, type);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        return intent;
+    }
+
+    private static Intent createGalleryIntent(Context context, int type) {
+        storeType(context, type);
+        return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    private static Intent createCameraIntent(Context context, int type) {
+        storeType(context, type);
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
             Uri capturedImageUri = createCameraPictureFile(context);
@@ -77,11 +81,13 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static Intent createChooserIntent(Context context, String chooserTitle) throws IOException {
-        return createChooserIntent(context, chooserTitle, SHOW_GALLERY_IN_CHOOSER);
+    private static Intent createChooserIntent(Context context, String chooserTitle, int type) throws IOException {
+        return createChooserIntent(context, chooserTitle, SHOW_GALLERY_IN_CHOOSER, type);
     }
 
-    private static Intent createChooserIntent(Context context, String chooserTitle, boolean showGallery) throws IOException {
+    private static Intent createChooserIntent(Context context, String chooserTitle, boolean showGallery, int type) throws IOException {
+        storeType(context, type);
+
         Uri outputFileUri = createCameraPictureFile(context);
         List<Intent> cameraIntents = new ArrayList<>();
         Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -98,9 +104,9 @@ public class EasyImage implements EasyImageConfig {
         Intent galleryIntent;
 
         if (showGallery) {
-            galleryIntent = createGalleryIntent();
+            galleryIntent = createGalleryIntent(context, type);
         } else {
-            galleryIntent = createDocumentsIntent();
+            galleryIntent = createDocumentsIntent(context, type);
         }
 
         Intent chooserIntent = Intent.createChooser(galleryIntent, chooserTitle);
@@ -109,102 +115,106 @@ public class EasyImage implements EasyImageConfig {
         return chooserIntent;
     }
 
-    public static void openChooserWithDocuments(Activity activity, String chooserTitle) {
+    private static void storeType(Context context, int type) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(KEY_TYPE, type).commit();
+    }
+
+    public static void openChooserWithDocuments(Activity activity, String chooserTitle, int type) {
         try {
-            Intent intent = createChooserIntent(activity, chooserTitle);
+            Intent intent = createChooserIntent(activity, chooserTitle, type);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooserWithDocuments(Fragment fragment, String chooserTitle) {
+    public static void openChooserWithDocuments(Fragment fragment, String chooserTitle, int type) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooserWithDocuments(android.app.Fragment fragment, String chooserTitle) {
+    public static void openChooserWithDocuments(android.app.Fragment fragment, String chooserTitle, int type) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle);
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooserWithGallery(Activity activity, String chooserTitle) {
+    public static void openChooserWithGallery(Activity activity, String chooserTitle, int type) {
         try {
-            Intent intent = createChooserIntent(activity, chooserTitle, true);
+            Intent intent = createChooserIntent(activity, chooserTitle, true, type);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooserWithGallery(Fragment fragment, String chooserTitle) {
+    public static void openChooserWithGallery(Fragment fragment, String chooserTitle, int type) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true);
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openChooserWithGallery(android.app.Fragment fragment, String chooserTitle) {
+    public static void openChooserWithGallery(android.app.Fragment fragment, String chooserTitle, int type) {
         try {
-            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true);
+            Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void openDocuments(Activity activity) {
-        Intent intent = createDocumentsIntent();
+    public static void openDocuments(Activity activity, int type) {
+        Intent intent = createDocumentsIntent(activity, type);
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openDocuments(Fragment fragment) {
-        Intent intent = createDocumentsIntent();
+    public static void openDocuments(Fragment fragment, int type) {
+        Intent intent = createDocumentsIntent(fragment.getContext(), type);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openDocuments(android.app.Fragment fragment) {
-        Intent intent = createDocumentsIntent();
+    public static void openDocuments(android.app.Fragment fragment, int type) {
+        Intent intent = createDocumentsIntent(fragment.getActivity(), type);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openGallery(Activity activity) {
-        Intent intent = createGalleryIntent();
+    public static void openGallery(Activity activity, int type) {
+        Intent intent = createGalleryIntent(activity, type);
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openGallery(Fragment fragment) {
-        Intent intent = createGalleryIntent();
+    public static void openGallery(Fragment fragment, int type) {
+        Intent intent = createGalleryIntent(fragment.getContext(), type);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openGallery(android.app.Fragment fragment) {
-        Intent intent = createGalleryIntent();
+    public static void openGallery(android.app.Fragment fragment, int type) {
+        Intent intent = createGalleryIntent(fragment.getActivity(), type);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openCamera(Activity activity) {
-        Intent intent = createCameraIntent(activity);
+    public static void openCamera(Activity activity, int type) {
+        Intent intent = createCameraIntent(activity, type);
         activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
-    public static void openCamera(Fragment fragment) {
-        Intent intent = createCameraIntent(fragment.getActivity());
+    public static void openCamera(Fragment fragment, int type) {
+        Intent intent = createCameraIntent(fragment.getActivity(), type);
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
-    public static void openCamera(android.app.Fragment fragment) {
-        Intent intent = createCameraIntent(fragment.getActivity());
+    public static void openCamera(android.app.Fragment fragment, int type) {
+        Intent intent = createCameraIntent(fragment.getActivity(), type);
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
