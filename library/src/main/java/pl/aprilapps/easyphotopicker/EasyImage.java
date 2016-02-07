@@ -316,7 +316,7 @@ public class EasyImage implements EasyImageConfig {
 
     public static void clearPublicTemp(Context context) {
         List<File> tempFiles = new ArrayList<>();
-        File[] files = EasyImageFiles.publicTemplDir(context).listFiles();
+        File[] files = EasyImageFiles.publicTempDir(context).listFiles();
         for (File file : files) {
             file.delete();
         }

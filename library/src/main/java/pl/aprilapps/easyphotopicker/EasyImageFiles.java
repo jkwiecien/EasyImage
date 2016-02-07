@@ -27,7 +27,7 @@ class EasyImageFiles {
 
     public static File tempImageDirectory(Context context) {
         boolean publicTemp = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.PUBLIC_TEMP, false);
-        File dir = publicTemp ? publicTemplDir(context) : privateTemplDir(context);
+        File dir = publicTemp ? publicTempDir(context) : privateTempDir(context);
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
@@ -46,15 +46,17 @@ class EasyImageFiles {
         return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     }
 
-    public static File publicTemplDir(Context context) {
+    public static File publicTempDir(Context context) {
         File cameraPicturesDir = new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context));
         File publicTempDir = new File(cameraPicturesDir, TEMP_FOLDER_NAME);
         if (!publicTempDir.exists()) publicTempDir.mkdirs();
         return publicTempDir;
     }
 
-    private static File privateTemplDir(Context context) {
-        return new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
+    private static File privateTempDir(Context context) {
+        File privateTempDir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
+        if (!privateTempDir.exists()) privateTempDir.mkdirs();
+        return privateTempDir;
     }
 
 //    public static File publicAppExternalFilesDir(Context context) {
