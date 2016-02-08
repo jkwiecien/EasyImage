@@ -125,18 +125,18 @@ public class MainActivity extends AppCompatActivity {
 
         EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
-            public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
                 //Some error handling
             }
 
             @Override
-            public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
+            public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
                 //Handle the image
                 onPhotoReturned(imageFile);
             }
 
             @Override
-            public void onCanceled(EasyImage.ImageSource source) {
+            public void onCanceled(EasyImage.ImageSource source, int type) {
                 //Cancel handling, you might wanna remove taken photo if it was canceled
                 if (source == EasyImage.ImageSource.CAMERA) {
                     File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);

@@ -34,11 +34,11 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public interface Callbacks {
-        void onImagePickerError(Exception e, ImageSource source);
+        void onImagePickerError(Exception e, ImageSource source, int type);
 
-        void onImagePicked(File imageFile, ImageSource source);
+        void onImagePicked(File imageFile, ImageSource source, int type);
 
-        void onCanceled(ImageSource source);
+        void onCanceled(ImageSource source, int type);
     }
 
     private static final String KEY_PHOTO_URI = "pl.aprilapps.easyphotopicker.photo_uri";
@@ -117,6 +117,10 @@ public class EasyImage implements EasyImageConfig {
 
     private static void storeType(Context context, int type) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(KEY_TYPE, type).commit();
+    }
+
+    private static int restoreType(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getInt(KEY_TYPE, 0);
     }
 
     public static void openChooserWithDocuments(Activity activity, String chooserTitle, int type) {
@@ -252,15 +256,15 @@ public class EasyImage implements EasyImageConfig {
                 }
             } else {
                 if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
-                    callbacks.onCanceled(ImageSource.DOCUMENTS);
+                    callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
                 } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
-                    callbacks.onCanceled(ImageSource.GALLERY);
+                    callbacks.onCanceled(ImageSource.GALLERY, restoreType(activity));
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
-                    callbacks.onCanceled(ImageSource.CAMERA);
+                    callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
                 } else if (data == null || data.getData() == null) {
-                    callbacks.onCanceled(ImageSource.CAMERA);
+                    callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
                 } else {
-                    callbacks.onCanceled(ImageSource.DOCUMENTS);
+                    callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
                 }
             }
         }
@@ -285,10 +289,10 @@ public class EasyImage implements EasyImageConfig {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
-            callbacks.onImagePicked(photoFile, ImageSource.DOCUMENTS);
+            callbacks.onImagePicked(photoFile, ImageSource.DOCUMENTS, restoreType(activity));
         } catch (Exception e) {
             e.printStackTrace();
-            callbacks.onImagePickerError(e, ImageSource.DOCUMENTS);
+            callbacks.onImagePickerError(e, ImageSource.DOCUMENTS, restoreType(activity));
         }
     }
 
@@ -296,21 +300,21 @@ public class EasyImage implements EasyImageConfig {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
-            callbacks.onImagePicked(photoFile, ImageSource.GALLERY);
+            callbacks.onImagePicked(photoFile, ImageSource.GALLERY, restoreType(activity));
         } catch (Exception e) {
             e.printStackTrace();
-            callbacks.onImagePickerError(e, ImageSource.GALLERY);
+            callbacks.onImagePickerError(e, ImageSource.GALLERY, restoreType(activity));
         }
     }
 
     private static void onPictureReturnedFromCamera(Activity activity, Callbacks callbacks) {
         try {
             File photoFile = EasyImage.takenCameraPicture(activity);
-            callbacks.onImagePicked(photoFile, ImageSource.CAMERA);
+            callbacks.onImagePicked(photoFile, ImageSource.CAMERA, restoreType(activity));
             PreferenceManager.getDefaultSharedPreferences(activity).edit().remove(KEY_LAST_CAMERA_PHOTO).commit();
         } catch (Exception e) {
             e.printStackTrace();
-            callbacks.onImagePickerError(e, ImageSource.CAMERA);
+            callbacks.onImagePickerError(e, ImageSource.CAMERA, restoreType(activity));
         }
     }
 
