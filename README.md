@@ -6,24 +6,27 @@ EasyImage allow you to easily take picture from gallery, camera or documents wit
 ##Essentials
 
 ####Taking straight to camera
-- ```EasyImage.openCamera(Activity activity);```
-- ```EasyImage.openCamera(Fragment fragment);```
+- ```EasyImage.openCamera(Activity activity, int type);```
+- ```EasyImage.openCamera(Fragment fragment, int type);```
 
 ####Taking straight to gallery or the gallery picker if there is more than 1 gallery app
-- ```EasyImage.openGallery(Activity activity);```
-- ```EasyImage.openGallery(Fragment fragment);```
+- ```EasyImage.openGallery(Activity activity, int type);```
+- ```EasyImage.openGallery(Fragment fragment, int type);```
 
 ####Taking straight to documents app
-- ```EasyImage.openDocuments(Activity activity);```
-- ```EasyImage.openDocuments(Fragment fragment);```
+- ```EasyImage.openDocuments(Activity activity, int type);```
+- ```EasyImage.openDocuments(Fragment fragment, int type);```
 
-####Displaying system picker to chose from camera or documents/gallery app
-- ```EasyImage.openChooser(Activity activity, String chooserTitle);```
-- ```EasyImage.openChooser(Fragment fragment, String chooserTitle);```
+####Displaying system picker to chose from camera or documents or gallery if no documents app available
+- ```EasyImage.openChooserWithDocuments(Activity activity, String chooserTitle, int type);```
+- ```EasyImage.openChooserWithDocuments(Fragment fragment, String chooserTitle, int type);```
 
 ####Displaying system picker to chose from camera or gallery app
-- ```EasyImage.openChooser(Activity activity, String chooserTitle, true);```
-- ```EasyImage.openChooser(Fragment fragment, String chooserTitle, true);```
+- ```EasyImage.openChooserWithGallery(Activity activity, String chooserTitle, int type);```
+- ```EasyImage.openChooserWithGallery(Fragment fragment, String chooserTitle, int type);```
+
+
+Type param is there only if you wan't to return different kind of images on the same screen, otherwise it's not relevant. If so just pass any int there.
 
 ####Getting the photo file
 
@@ -34,12 +37,12 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
     EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
         @Override
-        public void onImagePickerError(Exception e, EasyImage.ImageSource source) {
+        public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
             //Some error handling
         }
 
         @Override
-        public void onImagePicked(File imageFile, EasyImage.ImageSource source) {
+        public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
             //Handle the image
             onPhotoReturned(imageFile);
         }
@@ -52,7 +55,7 @@ If the user takes photo using camera, but then cancels, you might wanna remove t
 Sample app present's the usage:
 ```java
   @Override
-  public void onCanceled(EasyImage.ImageSource source) {
+  public void onCanceled(EasyImage.ImageSource source, int type) {
       //Cancel handling, you might wanna remove taken photo if it was canceled
       if (source == EasyImage.ImageSource.CAMERA) {
           File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);
@@ -100,7 +103,7 @@ repositories {
 }
     
 dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.1.3'
+    compile 'com.github.jkwiecien:EasyImage:1.2.0'
 }
 ```
 
