@@ -33,8 +33,6 @@ Type param is there only if you wan't to return different kind of images on the 
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
     EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
         @Override
         public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
