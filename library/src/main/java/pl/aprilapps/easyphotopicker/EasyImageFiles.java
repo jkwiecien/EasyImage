@@ -1,9 +1,11 @@
 package pl.aprilapps.easyphotopicker;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,7 +87,7 @@ class EasyImageFiles {
     public static File pickedExistingPicture(Context context, Uri photoUri) throws IOException {
         InputStream pictureInputStream = context.getContentResolver().openInputStream(photoUri);
         File directory = tempImageDirectory(context);
-        File photoFile = new File(directory, UUID.randomUUID().toString());
+        File photoFile = new File(directory, UUID.randomUUID().toString() + "." + getMimeType(context, photoUri));
         photoFile.createNewFile();
         writeToFile(pictureInputStream, photoFile);
         return photoFile;
@@ -108,5 +110,26 @@ class EasyImageFiles {
         return imageFile;
     }
 
+    /**
+     * To find out the extension of required object in given uri
+     * Solution by http://stackoverflow.com/a/36514823/1171484
+     */
+    public static String getMimeType(Context context, Uri uri) {
+        String extension;
+
+        //Check uri format to avoid null
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            //If scheme is a content
+            final MimeTypeMap mime = MimeTypeMap.getSingleton();
+            extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uri));
+        } else {
+            //If scheme is a File
+            //This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
+            extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
+
+        }
+
+        return extension;
+    }
 
 }
