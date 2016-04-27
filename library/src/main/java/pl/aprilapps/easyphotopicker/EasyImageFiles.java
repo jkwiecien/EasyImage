@@ -97,8 +97,13 @@ class EasyImageFiles {
      * @param context context
      */
     public static String getFolderLocation(Context context) {
-        String defaultFolderLocation = publicAppExternalDir(context).getPath();
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(BundleKeys.FOLDER_LOCATION, defaultFolderLocation);
+        File publicAppExternalDir = publicAppExternalDir(context);
+        String defaultFolderLocation = null;
+        if (publicAppExternalDir != null) {
+            defaultFolderLocation = publicAppExternalDir.getPath();
+        }
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(BundleKeys.FOLDER_LOCATION, defaultFolderLocation);
     }
 
     public static File getCameraPicturesLocation(Context context) throws IOException {
