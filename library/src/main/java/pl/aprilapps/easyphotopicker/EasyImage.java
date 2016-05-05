@@ -270,6 +270,13 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
+    public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) { 
+        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+            return true; 
+        } 
+        return false;
+    }
+
     /**
      * @param context context
      * @return File containing lastly taken (using camera) photo. Returns null if there was no photo taken or it doesn't exist anymore.
