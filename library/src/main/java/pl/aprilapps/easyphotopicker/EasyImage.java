@@ -1,6 +1,8 @@
 package pl.aprilapps.easyphotopicker;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -38,6 +41,8 @@ public class EasyImage implements EasyImageConfig {
 
         void onImagePicked(File imageFile, ImageSource source, int type);
 
+        void onMultipleImagesPicked(List<File> imageFiles, ImageSource source, int type);
+
         void onCanceled(ImageSource source, int type);
     }
 
@@ -65,6 +70,14 @@ public class EasyImage implements EasyImageConfig {
     private static Intent createGalleryIntent(Context context, int type) {
         storeType(context, type);
         return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private static Intent createMultiPickGalleryIntent(Context context, int type) {
+        storeType(context, type);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        return intent;
     }
 
     private static Intent createCameraIntent(Context context, int type) {
@@ -207,6 +220,48 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
+    /**
+     * Opens the gallery with the intent extra EXTRA_ALLOW_MULTIPLE. Select multiple images only works with API level >= 18.
+     * If the current API level is below 18, you will only be able to select a single image.
+     */
+    public static void openMultiSelectGallery(Activity activity, int type) {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent = createGalleryIntent(activity, type);
+        } else {
+            intent = createMultiPickGalleryIntent(activity, type);
+        }
+        activity.startActivityForResult(intent, REQ_PICK_MULTI_PICTURE_FROM_GALLERY);
+    }
+
+    /**
+     * Opens the gallery with the intent extra EXTRA_ALLOW_MULTIPLE. Select multiple images only works with API level >= 18.
+     * If the current API level is below 18, you will only be able to select a single image.
+     */
+    public static void openMultiSelectGallery(Fragment fragment, int type) {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent = createGalleryIntent(fragment.getContext(), type);
+        } else {
+            intent = createMultiPickGalleryIntent(fragment.getContext(), type);
+        }
+        fragment.startActivityForResult(intent, REQ_PICK_MULTI_PICTURE_FROM_GALLERY);
+    }
+
+    /**
+     * Opens the gallery with the intent extra EXTRA_ALLOW_MULTIPLE. Select multiple images only works with API level >= 18.
+     * If the current API level is below 18, you will only be able to select a single image.
+     */
+    public static void openMultiSelectGallery(android.app.Fragment fragment, int type) {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent = createGalleryIntent(fragment.getActivity(), type);
+        } else {
+            intent = createMultiPickGalleryIntent(fragment.getActivity(), type);
+        }
+        fragment.startActivityForResult(intent, REQ_PICK_MULTI_PICTURE_FROM_GALLERY);
+    }
+
     public static void openCamera(Activity activity, int type) {
         Intent intent = createCameraIntent(activity, type);
         activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
@@ -241,12 +296,14 @@ public class EasyImage implements EasyImageConfig {
 
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
-        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS || requestCode == EasyImageConfig.REQ_PICK_MULTI_PICTURE_FROM_GALLERY) {
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
                     onPictureReturnedFromDocuments(data, activity, callbacks);
                 } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
                     onPictureReturnedFromGallery(data, activity, callbacks);
+                } else if (requestCode == EasyImageConfig.REQ_PICK_MULTI_PICTURE_FROM_GALLERY) {
+                    onPicturesReturnedFromGallery(data, activity, callbacks);
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
                     onPictureReturnedFromCamera(activity, callbacks);
                 } else if (data == null || data.getData() == null) {
@@ -259,6 +316,8 @@ public class EasyImage implements EasyImageConfig {
                     callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
                 } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
                     callbacks.onCanceled(ImageSource.GALLERY, restoreType(activity));
+                } else if (requestCode == EasyImageConfig.REQ_PICK_MULTI_PICTURE_FROM_GALLERY) {
+                    callbacks.onCanceled(ImageSource.GALLERY, restoreType(activity));
                 } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
                     callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
                 } else if (data == null || data.getData() == null) {
@@ -270,11 +329,8 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) { 
-        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
-            return true; 
-        } 
-        return false;
+    public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) {
+        return requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS || requestCode == EasyImageConfig.REQ_PICK_MULTI_PICTURE_FROM_GALLERY;
     }
 
     /**
@@ -308,6 +364,34 @@ public class EasyImage implements EasyImageConfig {
             Uri photoPath = data.getData();
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
             callbacks.onImagePicked(photoFile, ImageSource.GALLERY, restoreType(activity));
+        } catch (Exception e) {
+            e.printStackTrace();
+            callbacks.onImagePickerError(e, ImageSource.GALLERY, restoreType(activity));
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private static void onPicturesReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
+        try {
+            ClipData clipData = data.getClipData();
+            List<File> files;
+
+            if (clipData == null) {
+                // ClipData is sometimes null if only one image selected (e.g. on the default Gallery app)
+                files = new ArrayList<>(1);
+                Uri photoPath = data.getData();
+                File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
+                files.add(photoFile);
+            } else {
+                files = new ArrayList<>(clipData.getItemCount());
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    ClipData.Item item = clipData.getItemAt(i);
+                    Uri photoPath = item.getUri();
+                    File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
+                    files.add(photoFile);
+                }
+            }
+            callbacks.onMultipleImagesPicked(files, ImageSource.GALLERY, restoreType(activity));
         } catch (Exception e) {
             e.printStackTrace();
             callbacks.onImagePickerError(e, ImageSource.GALLERY, restoreType(activity));
