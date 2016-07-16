@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -133,6 +134,11 @@ public class MainActivity extends AppCompatActivity {
             public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
                 //Handle the image
                 onPhotoReturned(imageFile);
+            }
+
+            @Override
+            public void onMultipleImagesPicked(List<File> imageFiles, EasyImage.ImageSource source, int type) {
+                // TODO implement
             }
 
             @Override
