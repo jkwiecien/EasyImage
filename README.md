@@ -97,15 +97,9 @@ EasyImage.openCamera()
 [This library](https://github.com/tajchert/Nammu) will help you manage runtime permissions.
 
 ##Gradle dependency
-```groovy
-repositories {
-    maven { url "https://jitpack.io" }
-}
-    
-dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.2.3'
-}
-```
+Get the latest version from jitpack
+
+[![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#renaudcerrato/FloatingSearchView)
 
 
 License
