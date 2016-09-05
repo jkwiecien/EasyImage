@@ -5,6 +5,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
+        applicationId "pl.aprilapps.easyphotopicker.sample"
         minSdkVersion 15
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
