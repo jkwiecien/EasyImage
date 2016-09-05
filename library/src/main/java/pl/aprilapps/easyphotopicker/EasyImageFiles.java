@@ -109,10 +109,22 @@ class EasyImageFiles {
     }
 
     public static File getCameraPicturesLocation(Context context) throws IOException {
-        File dir = new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context));
+
+        File cacheDir = context.getCacheDir();
+
+        if (isExternalStorageWritable()) {
+            cacheDir = context.getExternalCacheDir();
+        }
+
+        File dir = new File(cacheDir, DEFAULT_FOLDER_NAME);
         if (!dir.exists()) dir.mkdirs();
         File imageFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg", dir);
         return imageFile;
+    }
+
+    private static boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /**
