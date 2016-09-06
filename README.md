@@ -99,7 +99,7 @@ EasyImage.openCamera()
 ##Gradle dependency
 Get the latest version from jitpack
 
-[![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#renaudcerrato/FloatingSearchView)
+[![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 
 
 License
