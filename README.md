@@ -1,4 +1,4 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725) [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#renaudcerrato/FloatingSearchView)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725) [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 # What is it?
 EasyImage allow you to easily take picture from gallery, camera or documents without creating lots of boilerplate.
   
