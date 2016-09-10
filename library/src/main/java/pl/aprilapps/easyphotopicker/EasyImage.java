@@ -11,11 +11,13 @@ import android.net.Uri;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,9 @@ public class EasyImage implements EasyImageConfig {
 
     private static Uri createCameraPictureFile(Context context) throws IOException {
         File imagePath = EasyImageFiles.getCameraPicturesLocation(context);
-        Uri uri = Uri.fromFile(imagePath);
+        String packageName = context.getApplicationContext().getPackageName();
+        String authority = packageName + ".easyphotopicker.fileprovider";
+        Uri uri = FileProvider.getUriForFile(context, authority, imagePath);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
         editor.putString(KEY_LAST_CAMERA_PHOTO, imagePath.toString());
@@ -73,12 +77,26 @@ public class EasyImage implements EasyImageConfig {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
             Uri capturedImageUri = createCameraPictureFile(context);
+            //We have to explicitly grant the write permission since Intent.setFlag works only on API Level >=20
+            grantWritePermission(context, intent, capturedImageUri);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return intent;
+    }
+
+    private static void revokeWritePermission(Context context, Uri uri) {
+        context.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    }
+
+    private static void grantWritePermission(Context context, Intent intent, Uri uri) {
+        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
     }
 
     private static Intent createChooserIntent(Context context, String chooserTitle, int type) throws IOException {
@@ -222,23 +240,15 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
     }
 
-
+    @Nullable
     private static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
-        @SuppressWarnings("ConstantConditions")
-        URI imageUri = new URI(PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_PHOTO_URI, null));
-        notifyGallery(context, imageUri);
-        return new File(imageUri);
+        String lastCameraPhoto = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_PHOTO, null);
+        if (lastCameraPhoto != null) {
+            return new File(lastCameraPhoto);
+        } else {
+            return null;
+        }
     }
-
-
-    private static void notifyGallery(Context context, URI pictureUri) throws URISyntaxException {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(pictureUri);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        context.sendBroadcast(mediaScanIntent);
-    }
-
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
         if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
@@ -316,9 +326,26 @@ public class EasyImage implements EasyImageConfig {
 
     private static void onPictureReturnedFromCamera(Activity activity, Callbacks callbacks) {
         try {
+
+            String lastImageUri = PreferenceManager.getDefaultSharedPreferences(activity).getString(KEY_PHOTO_URI, null);
+            if (!TextUtils.isEmpty(lastImageUri)) {
+                revokeWritePermission(activity, Uri.parse(lastImageUri));
+            }
+
             File photoFile = EasyImage.takenCameraPicture(activity);
-            callbacks.onImagePicked(photoFile, ImageSource.CAMERA, restoreType(activity));
-            PreferenceManager.getDefaultSharedPreferences(activity).edit().remove(KEY_LAST_CAMERA_PHOTO).commit();
+
+            if (photoFile == null) {
+                Exception e = new IllegalStateException("Unable to get the picture returned from camera");
+                callbacks.onImagePickerError(e, ImageSource.CAMERA, restoreType(activity));
+            } else {
+                callbacks.onImagePicked(photoFile, ImageSource.CAMERA, restoreType(activity));
+            }
+
+            PreferenceManager.getDefaultSharedPreferences(activity)
+                    .edit()
+                    .remove(KEY_LAST_CAMERA_PHOTO)
+                    .remove(KEY_PHOTO_URI)
+                    .apply();
         } catch (Exception e) {
             e.printStackTrace();
             callbacks.onImagePickerError(e, ImageSource.CAMERA, restoreType(activity));
