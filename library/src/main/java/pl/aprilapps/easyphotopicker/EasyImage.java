@@ -117,6 +117,7 @@ public class EasyImage implements EasyImageConfig {
             intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
             intent.setPackage(packageName);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            grantWritePermission(context, intent, outputFileUri);
             cameraIntents.add(intent);
         }
         Intent galleryIntent;
