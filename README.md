@@ -10,8 +10,8 @@ EasyImage allow you to easily take picture from gallery, camera or documents wit
 - ```EasyImage.openCamera(Fragment fragment, int type);```
 
 ####Taking straight to gallery or the gallery picker if there is more than 1 gallery app
-- ```EasyImage.openGallery(Activity activity, int type);```
-- ```EasyImage.openGallery(Fragment fragment, int type);```
+- ```EasyImage.openGallery(Activity activity, int type, boolean allowMultiple);```
+- ```EasyImage.openGallery(Fragment fragment, int type, boolean allowMultiple);```
 
 ####Taking straight to documents app
 - ```EasyImage.openDocuments(Activity activity, int type);```
@@ -101,7 +101,7 @@ Get the latest version from jitpack
 
 [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 
-Please have in mind that support for SDK 15 & 16 ended on version 1.3.1. If you have to support one of those, use that version of the library:
+Please have in mind that support for SDK 14 & 15 ended on version 1.3.1. If you have to support one of those, use that version of the library:
 
 ```
 dependencies {
