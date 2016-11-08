@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.io.File;
 import java.util.List;
@@ -24,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.recycler_view)
     protected RecyclerView recyclerView;
+
+    @Bind(R.id.gallery_button)
+    protected View galleryButton;
 
     private ImagesAdapter imagesAdapter;
 
@@ -54,11 +58,19 @@ public class MainActivity extends AppCompatActivity {
                 .saveInAppExternalFilesDir()
                 .setCopyExistingPicturesToPublicLocation(true);
 
+        checkGalleryAppAvailability();
+
 //        EasyImage.configuration(this)
 //                .setImagesFolderName("Sample app images")
 //                .saveInRootPicturesDirectory();
     }
 
+    private void checkGalleryAppAvailability() {
+        if (!EasyImage.canDeviceHandleGallery(this)) {
+            //Device has no app that handles gallery intent
+            galleryButton.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

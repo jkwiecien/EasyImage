@@ -71,7 +71,7 @@ public class EasyImage implements EasyImageConfig {
 
     private static Intent createGalleryIntent(Context context, int type, boolean allowMultiple) {
         storeType(context, type);
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = plainGalleryPickerIntent();
         if (Build.VERSION.SDK_INT >= 18) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
         }
@@ -311,6 +311,14 @@ public class EasyImage implements EasyImageConfig {
             return true;
         }
         return false;
+    }
+
+    private static Intent plainGalleryPickerIntent() {
+        return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    }
+
+    public static boolean canDeviceHandleGallery(Context context) {
+        return plainGalleryPickerIntent().resolveActivity(context.getPackageManager()) != null;
     }
 
     /**

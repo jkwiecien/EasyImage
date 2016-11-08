@@ -26,7 +26,7 @@ ext {
     buildToolsVersion = "25.0.0"
     minSdkVersion = 16
     versionCode = 10
-    versionName = "1.2.1"
+    versionName = "1.4.0"
 
     // App dependencies
     supportLibraryVersion = '25.0.0'
