@@ -1,6 +1,7 @@
 package pl.aprilapps.easyphotopicker;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -38,7 +40,7 @@ public class EasyImage implements EasyImageConfig {
     public interface Callbacks {
         void onImagePickerError(Exception e, ImageSource source, int type);
 
-        void onImagePicked(File imageFile, ImageSource source, int type);
+        void onImagesPicked(List<File> imageFiles, ImageSource source, int type);
 
         void onCanceled(ImageSource source, int type);
     }
@@ -66,9 +68,14 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static Intent createGalleryIntent(Context context, int type) {
+
+    private static Intent createGalleryIntent(Context context, int type, boolean allowMultiple) {
         storeType(context, type);
-        return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (Build.VERSION.SDK_INT >= 18) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        }
+        return intent;
     }
 
     private static Intent createCameraIntent(Context context, int type) {
@@ -123,7 +130,7 @@ public class EasyImage implements EasyImageConfig {
         Intent galleryIntent;
 
         if (showGallery) {
-            galleryIntent = createGalleryIntent(context, type);
+            galleryIntent = createGalleryIntent(context, type, true);
         } else {
             galleryIntent = createDocumentsIntent(context, type);
         }
@@ -211,18 +218,36 @@ public class EasyImage implements EasyImageConfig {
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
     }
 
-    public static void openGallery(Activity activity, int type) {
-        Intent intent = createGalleryIntent(activity, type);
+    /**
+     * Opens default galery or a available galleries picker if there is no default
+     *
+     * @param type          Custom type of your choice, which will be returned with the images
+     * @param allowMultiple Whether multiple images picking should be available. CAUTION - works only for API 18+
+     */
+    public static void openGallery(Activity activity, int type, boolean allowMultiple) {
+        Intent intent = createGalleryIntent(activity, type, allowMultiple);
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openGallery(Fragment fragment, int type) {
-        Intent intent = createGalleryIntent(fragment.getContext(), type);
+    /**
+     * Opens default galery or a available galleries picker if there is no default
+     *
+     * @param type          Custom type of your choice, which will be returned with the images
+     * @param allowMultiple Whether multiple images picking should be available. CAUTION - works only for API 18+
+     */
+    public static void openGallery(Fragment fragment, int type, boolean allowMultiple) {
+        Intent intent = createGalleryIntent(fragment.getContext(), type, allowMultiple);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
-    public static void openGallery(android.app.Fragment fragment, int type) {
-        Intent intent = createGalleryIntent(fragment.getActivity(), type);
+    /**
+     * Opens default galery or a available galleries picker if there is no default
+     *
+     * @param type          Custom type of your choice, which will be returned with the images
+     * @param allowMultiple Whether multiple images picking should be available. CAUTION - works only for API 18+
+     */
+    public static void openGallery(android.app.Fragment fragment, int type, boolean allowMultiple) {
+        Intent intent = createGalleryIntent(fragment.getActivity(), type, allowMultiple);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
@@ -307,7 +332,9 @@ public class EasyImage implements EasyImageConfig {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
-            callbacks.onImagePicked(photoFile, ImageSource.DOCUMENTS, restoreType(activity));
+            List<File> files = new ArrayList<>();
+            files.add(photoFile);
+            callbacks.onImagesPicked(files, ImageSource.DOCUMENTS, restoreType(activity));
         } catch (Exception e) {
             e.printStackTrace();
             callbacks.onImagePickerError(e, ImageSource.DOCUMENTS, restoreType(activity));
@@ -316,9 +343,15 @@ public class EasyImage implements EasyImageConfig {
 
     private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
         try {
-            Uri photoPath = data.getData();
-            File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
-            callbacks.onImagePicked(photoFile, ImageSource.GALLERY, restoreType(activity));
+            ClipData clipData = data.getClipData();
+            List<File> files = new ArrayList<>();
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                Uri uri = clipData.getItemAt(i).getUri();
+                File file = EasyImageFiles.pickedExistingPicture(activity, uri);
+                files.add(file);
+            }
+
+            callbacks.onImagesPicked(files, ImageSource.GALLERY, restoreType(activity));
         } catch (Exception e) {
             e.printStackTrace();
             callbacks.onImagePickerError(e, ImageSource.GALLERY, restoreType(activity));
@@ -334,12 +367,14 @@ public class EasyImage implements EasyImageConfig {
             }
 
             File photoFile = EasyImage.takenCameraPicture(activity);
+            List<File> files = new ArrayList<>();
+            files.add(photoFile);
 
             if (photoFile == null) {
                 Exception e = new IllegalStateException("Unable to get the picture returned from camera");
                 callbacks.onImagePickerError(e, ImageSource.CAMERA, restoreType(activity));
             } else {
-                callbacks.onImagePicked(photoFile, ImageSource.CAMERA, restoreType(activity));
+                callbacks.onImagesPicked(files, ImageSource.CAMERA, restoreType(activity));
             }
 
             PreferenceManager.getDefaultSharedPreferences(activity)

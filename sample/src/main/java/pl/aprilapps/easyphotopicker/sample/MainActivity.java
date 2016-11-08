@@ -6,11 +6,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import java.io.File;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -22,8 +22,10 @@ import pl.tajchert.nammu.PermissionCallback;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Bind(R.id.image_view)
-    protected ImageView imageView;
+    @Bind(R.id.recycler_view)
+    protected RecyclerView recyclerView;
+
+    private ImagesAdapter imagesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         Nammu.init(this);
+
+        imagesAdapter = new ImagesAdapter(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(imagesAdapter);
 
         /**
          * If saving in public app folder inside Pictures by using saveInAppExternalFilesDir,
@@ -130,9 +137,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
-                //Handle the image
-                onPhotoReturned(imageFile);
+            public void onImagesPicked(List<File> imageFiles, EasyImage.ImageSource source, int type) {
+                onPhotosReturned(imageFiles);
             }
 
             @Override
@@ -146,12 +152,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void onPhotoReturned(File photoFile) {
-        Picasso.with(this)
-                .load(photoFile)
-                .fit()
-                .centerCrop()
-                .into(imageView);
+    private void onPhotosReturned(List<File> photos) {
+        imagesAdapter.updateList(photos);
     }
 
     @Override
