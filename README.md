@@ -103,7 +103,8 @@ Get the latest version from jitpack
 
 Please have in mind that support for SDK 15 & 16 ended on version 1.3.1. If you have to support one of those, use that version of the library:
 
-```dependencies {
+```
+dependencies {
 	        compile 'com.github.jkwiecien:EasyImage:1.3.1'
 	}
 ```
