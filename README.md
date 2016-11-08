@@ -42,9 +42,9 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         }
 
         @Override
-        public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
-            //Handle the image
-            onPhotoReturned(imageFile);
+        public void onImagesPicked(List<File> imagesFiles, EasyImage.ImageSource source, int type) {
+            //Handle the images
+            onPhotosReturned(imagesFiles);
         }
     });
 }
