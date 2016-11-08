@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        Nammu.init(this);
 
         /**
          * If saving in public app folder inside Pictures by using saveInAppExternalFilesDir,
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openGallery(this, 0);
+        EasyImage.openGallery(this, 0, true);
     }
 
     @OnClick(R.id.chooser_button)
