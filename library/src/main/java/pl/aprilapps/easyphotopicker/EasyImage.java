@@ -353,10 +353,17 @@ public class EasyImage implements EasyImageConfig {
         try {
             ClipData clipData = data.getClipData();
             List<File> files = new ArrayList<>();
-            for (int i = 0; i < clipData.getItemCount(); i++) {
-                Uri uri = clipData.getItemAt(i).getUri();
-                File file = EasyImageFiles.pickedExistingPicture(activity, uri);
-                files.add(file);
+            if (clipData == null)
+            {
+                Uri uri = data.getData ();
+                File file = EasyImageFiles.pickedExistingPicture (activity, uri);
+                files.add (file);
+            } else {
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    Uri uri = clipData.getItemAt(i).getUri();
+                    File file = EasyImageFiles.pickedExistingPicture(activity, uri);
+                    files.add(file);
+                }
             }
 
             callbacks.onImagesPicked(files, ImageSource.GALLERY, restoreType(activity));
