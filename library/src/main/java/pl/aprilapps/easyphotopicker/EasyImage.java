@@ -152,7 +152,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithDocuments(Activity activity, String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, type);
-            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_DOCUMENTS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -161,7 +161,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithDocuments(Fragment fragment, String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_DOCUMENTS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -170,7 +170,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithDocuments(android.app.Fragment fragment, String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_DOCUMENTS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -179,7 +179,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithGallery(Activity activity, String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, true, type);
-            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_GALLERY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -188,7 +188,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithGallery(Fragment fragment, String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_GALLERY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -197,7 +197,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithGallery(android.app.Fragment fragment, String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
+            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_GALLERY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -277,33 +277,42 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
-        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
-                    onPictureReturnedFromDocuments(data, activity, callbacks);
-                } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
-                    onPictureReturnedFromGallery(data, activity, callbacks);
-                } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
-                    onPictureReturnedFromCamera(activity, callbacks);
-                } else if (data == null || data.getData() == null) {
-                    onPictureReturnedFromCamera(activity, callbacks);
+        boolean isEasyImage = (requestCode & EASYIMAGE_IDENTIFICATOR) > 0;
+        if (isEasyImage){
+            requestCode &= ~REQ_SOURCE_CHOOSER;
+            if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+                if (resultCode == Activity.RESULT_OK) {
+                    if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS && !isPhoto (data)) {
+                        onPictureReturnedFromDocuments(data, activity, callbacks);
+                    } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY && !isPhoto (data)) {
+                        onPictureReturnedFromGallery(data, activity, callbacks);
+                    } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+                        onPictureReturnedFromCamera(activity, callbacks);
+                    } else if (isPhoto (data)) {
+                        onPictureReturnedFromCamera(activity, callbacks);
+                    } else {
+                        onPictureReturnedFromDocuments(data, activity, callbacks);
+                    }
                 } else {
-                    onPictureReturnedFromDocuments(data, activity, callbacks);
-                }
-            } else {
-                if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
-                    callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
-                } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
-                    callbacks.onCanceled(ImageSource.GALLERY, restoreType(activity));
-                } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
-                    callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
-                } else if (data == null || data.getData() == null) {
-                    callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
-                } else {
-                    callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
+                    if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+                        callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
+                    } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
+                        callbacks.onCanceled(ImageSource.GALLERY, restoreType(activity));
+                    } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+                        callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
+                    } else if (isPhoto (data)) {
+                        callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
+                    } else {
+                        callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
+                    }
                 }
             }
         }
+    }
+
+    private static boolean isPhoto (Intent data)
+    {
+        return data == null || (data.getData() == null && data.getClipData () == null);
     }
 
     public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) {
