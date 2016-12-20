@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -40,7 +41,7 @@ public class EasyImage implements EasyImageConfig {
     public interface Callbacks {
         void onImagePickerError(Exception e, ImageSource source, int type);
 
-        void onImagesPicked(List<File> imageFiles, ImageSource source, int type);
+        void onImagesPicked(@NonNull List<File> imageFiles, ImageSource source, int type);
 
         void onCanceled(ImageSource source, int type);
     }
@@ -49,7 +50,7 @@ public class EasyImage implements EasyImageConfig {
     private static final String KEY_LAST_CAMERA_PHOTO = "pl.aprilapps.easyphotopicker.last_photo";
     private static final String KEY_TYPE = "pl.aprilapps.easyphotopicker.type";
 
-    private static Uri createCameraPictureFile(Context context) throws IOException {
+    private static Uri createCameraPictureFile(@NonNull Context context) throws IOException {
         File imagePath = EasyImageFiles.getCameraPicturesLocation(context);
         String packageName = context.getApplicationContext().getPackageName();
         String authority = packageName + ".easyphotopicker.fileprovider";
@@ -61,7 +62,7 @@ public class EasyImage implements EasyImageConfig {
         return uri;
     }
 
-    private static Intent createDocumentsIntent(Context context, int type) {
+    private static Intent createDocumentsIntent(@NonNull Context context, int type) {
         storeType(context, type);
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -69,7 +70,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
 
-    private static Intent createGalleryIntent(Context context, int type, boolean allowMultiple) {
+    private static Intent createGalleryIntent(@NonNull Context context, int type, boolean allowMultiple) {
         storeType(context, type);
         Intent intent = plainGalleryPickerIntent();
         if (Build.VERSION.SDK_INT >= 18) {
@@ -78,7 +79,7 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static Intent createCameraIntent(Context context, int type) {
+    private static Intent createCameraIntent(@NonNull Context context, int type) {
         storeType(context, type);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -94,11 +95,11 @@ public class EasyImage implements EasyImageConfig {
         return intent;
     }
 
-    private static void revokeWritePermission(Context context, Uri uri) {
+    private static void revokeWritePermission(@NonNull Context context, Uri uri) {
         context.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
 
-    private static void grantWritePermission(Context context, Intent intent, Uri uri) {
+    private static void grantWritePermission(@NonNull Context context, Intent intent, Uri uri) {
         List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         for (ResolveInfo resolveInfo : resInfoList) {
             String packageName = resolveInfo.activityInfo.packageName;
@@ -106,11 +107,11 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static Intent createChooserIntent(Context context, String chooserTitle, int type) throws IOException {
+    private static Intent createChooserIntent(@NonNull Context context, @Nullable String chooserTitle, int type) throws IOException {
         return createChooserIntent(context, chooserTitle, SHOW_GALLERY_IN_CHOOSER, type);
     }
 
-    private static Intent createChooserIntent(Context context, String chooserTitle, boolean showGallery, int type) throws IOException {
+    private static Intent createChooserIntent(@NonNull Context context, @Nullable String chooserTitle, boolean showGallery, int type) throws IOException {
         storeType(context, type);
 
         Uri outputFileUri = createCameraPictureFile(context);
@@ -141,15 +142,15 @@ public class EasyImage implements EasyImageConfig {
         return chooserIntent;
     }
 
-    private static void storeType(Context context, int type) {
+    private static void storeType(@NonNull Context context, int type) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putInt(KEY_TYPE, type).commit();
     }
 
-    private static int restoreType(Context context) {
+    private static int restoreType(@NonNull Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getInt(KEY_TYPE, 0);
     }
 
-    public static void openChooserWithDocuments(Activity activity, String chooserTitle, int type) {
+    public static void openChooserWithDocuments(Activity activity, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, type);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -158,7 +159,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooserWithDocuments(Fragment fragment, String chooserTitle, int type) {
+    public static void openChooserWithDocuments(Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -167,7 +168,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooserWithDocuments(android.app.Fragment fragment, String chooserTitle, int type) {
+    public static void openChooserWithDocuments(android.app.Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -176,7 +177,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooserWithGallery(Activity activity, String chooserTitle, int type) {
+    public static void openChooserWithGallery(Activity activity, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, true, type);
             activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -185,7 +186,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooserWithGallery(Fragment fragment, String chooserTitle, int type) {
+    public static void openChooserWithGallery(Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -194,7 +195,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void openChooserWithGallery(android.app.Fragment fragment, String chooserTitle, int type) {
+    public static void openChooserWithGallery(android.app.Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
             fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER);
@@ -276,7 +277,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, Callbacks callbacks) {
+    public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, @NonNull Callbacks callbacks) {
         if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
             if (resultCode == Activity.RESULT_OK) {
                 if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
@@ -317,7 +318,7 @@ public class EasyImage implements EasyImageConfig {
         return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
     }
 
-    public static boolean canDeviceHandleGallery(Context context) {
+    public static boolean canDeviceHandleGallery(@NonNull Context context) {
         return plainGalleryPickerIntent().resolveActivity(context.getPackageManager()) != null;
     }
 
@@ -325,7 +326,7 @@ public class EasyImage implements EasyImageConfig {
      * @param context context
      * @return File containing lastly taken (using camera) photo. Returns null if there was no photo taken or it doesn't exist anymore.
      */
-    public static File lastlyTakenButCanceledPhoto(Context context) {
+    public static File lastlyTakenButCanceledPhoto(@NonNull Context context) {
         String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_PHOTO, null);
         if (filePath == null) return null;
         File file = new File(filePath);
@@ -336,7 +337,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static void onPictureReturnedFromDocuments(Intent data, Activity activity, Callbacks callbacks) {
+    private static void onPictureReturnedFromDocuments(Intent data, Activity activity, @NonNull Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
@@ -349,7 +350,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static void onPictureReturnedFromGallery(Intent data, Activity activity, Callbacks callbacks) {
+    private static void onPictureReturnedFromGallery(Intent data, Activity activity, @NonNull Callbacks callbacks) {
         try {
             ClipData clipData = data.getClipData();
             List<File> files = new ArrayList<>();
@@ -373,7 +374,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    private static void onPictureReturnedFromCamera(Activity activity, Callbacks callbacks) {
+    private static void onPictureReturnedFromCamera(Activity activity, @NonNull Callbacks callbacks) {
         try {
 
             String lastImageUri = PreferenceManager.getDefaultSharedPreferences(activity).getString(KEY_PHOTO_URI, null);
@@ -403,7 +404,7 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void clearPublicTemp(Context context) {
+    public static void clearPublicTemp(@NonNull Context context) {
         List<File> tempFiles = new ArrayList<>();
         File[] files = EasyImageFiles.publicTempDir(context).listFiles();
         for (File file : files) {
@@ -417,7 +418,7 @@ public class EasyImage implements EasyImageConfig {
      *
      * @param context context
      */
-    public static void clearConfiguration(Context context) {
+    public static void clearConfiguration(@NonNull Context context) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .remove(BundleKeys.FOLDER_NAME)
                 .remove(BundleKeys.FOLDER_LOCATION)
@@ -425,7 +426,7 @@ public class EasyImage implements EasyImageConfig {
                 .apply();
     }
 
-    public static Configuration configuration(Context context) {
+    public static Configuration configuration(@NonNull Context context) {
         return new Configuration(context);
     }
 

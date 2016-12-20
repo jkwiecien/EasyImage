@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -23,18 +24,18 @@ class EasyImageFiles {
     public static String TEMP_FOLDER_NAME = "Temp";
 
 
-    public static String getFolderName(Context context) {
+    public static String getFolderName(@NonNull Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(BundleKeys.FOLDER_NAME, DEFAULT_FOLDER_NAME);
     }
 
-    public static File tempImageDirectory(Context context) {
+    public static File tempImageDirectory(@NonNull Context context) {
         boolean publicTemp = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.PUBLIC_TEMP, false);
         File dir = publicTemp ? publicTempDir(context) : privateTempDir(context);
         if (!dir.exists()) dir.mkdirs();
         return dir;
     }
 
-    public static File publicRootDir(Context context) {
+    public static File publicRootDir(@NonNull Context context) {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
     }
 
@@ -44,18 +45,18 @@ class EasyImageFiles {
 //        return dir;
 //    }
 
-    public static File publicAppExternalDir(Context context) {
+    public static File publicAppExternalDir(@NonNull Context context) {
         return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     }
 
-    public static File publicTempDir(Context context) {
+    public static File publicTempDir(@NonNull Context context) {
         File cameraPicturesDir = new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context));
         File publicTempDir = new File(cameraPicturesDir, TEMP_FOLDER_NAME);
         if (!publicTempDir.exists()) publicTempDir.mkdirs();
         return publicTempDir;
     }
 
-    private static File privateTempDir(Context context) {
+    private static File privateTempDir(@NonNull Context context) {
         File privateTempDir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
         if (!privateTempDir.exists()) privateTempDir.mkdirs();
         return privateTempDir;
@@ -84,7 +85,7 @@ class EasyImageFiles {
         }
     }
 
-    public static File pickedExistingPicture(Context context, Uri photoUri) throws IOException {
+    public static File pickedExistingPicture(@NonNull Context context, Uri photoUri) throws IOException {
         InputStream pictureInputStream = context.getContentResolver().openInputStream(photoUri);
         File directory = tempImageDirectory(context);
         File photoFile = new File(directory, UUID.randomUUID().toString() + "." + getMimeType(context, photoUri));
@@ -98,7 +99,7 @@ class EasyImageFiles {
      *
      * @param context context
      */
-    public static String getFolderLocation(Context context) {
+    public static String getFolderLocation(@NonNull Context context) {
         File publicAppExternalDir = publicAppExternalDir(context);
         String defaultFolderLocation = null;
         if (publicAppExternalDir != null) {
@@ -108,7 +109,7 @@ class EasyImageFiles {
                 .getString(BundleKeys.FOLDER_LOCATION, defaultFolderLocation);
     }
 
-    public static File getCameraPicturesLocation(Context context) throws IOException {
+    public static File getCameraPicturesLocation(@NonNull Context context) throws IOException {
 
         File cacheDir = context.getCacheDir();
 
@@ -131,7 +132,7 @@ class EasyImageFiles {
      * To find out the extension of required object in given uri
      * Solution by http://stackoverflow.com/a/36514823/1171484
      */
-    public static String getMimeType(Context context, Uri uri) {
+    public static String getMimeType(@NonNull Context context, @NonNull Uri uri) {
         String extension;
 
         //Check uri format to avoid null
