@@ -10,8 +10,8 @@ EasyImage allow you to easily take picture from gallery, camera or documents wit
 - ```EasyImage.openCamera(Fragment fragment, int type);```
 
 ####Taking straight to gallery or the gallery picker if there is more than 1 gallery app
-- ```EasyImage.openGallery(Activity activity, int type, boolean allowMultiple);```
-- ```EasyImage.openGallery(Fragment fragment, int type, boolean allowMultiple);```
+- ```EasyImage.openGallery(Activity activity, int typee);```
+- ```EasyImage.openGallery(Fragment fragment, int type);```
 
 ####Taking straight to documents app
 - ```EasyImage.openDocuments(Activity activity, int type);```
@@ -69,6 +69,7 @@ Sample app present's the usage:
           .setImagesFolderName("My app images") //images folder name, default is "EasyImage"
           //.saveInAppExternalFilesDir() //if you want to use root internal memory for storying images
           .saveInRootPicturesDirectory(); //if you want to use internal memory for storying images - default
+	  .setAllowMultiplePickInGallery(true) //allows multiple picking in galleries that handle it. Also only for phones with API 18+ but it won't crash lower APIs. False by default
 ```
 Configuration is persisted so if you want to clear it before the next use call 
 ```java
