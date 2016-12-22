@@ -56,13 +56,10 @@ public class MainActivity extends AppCompatActivity {
         EasyImage.configuration(this)
                 .setImagesFolderName("Sample app images")
                 .saveInAppExternalFilesDir()
-                .setCopyExistingPicturesToPublicLocation(true);
+                .setCopyExistingPicturesToPublicLocation(true)
+                .setAllowMultiplePickInGallery(true);
 
         checkGalleryAppAvailability();
-
-//        EasyImage.configuration(this)
-//                .setImagesFolderName("Sample app images")
-//                .saveInRootPicturesDirectory();
     }
 
     private void checkGalleryAppAvailability() {
@@ -125,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.gallery_button)
     protected void onPickFromGaleryClicked() {
         /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-        EasyImage.openGallery(this, 0, true);
+        EasyImage.openGallery(this, 0);
     }
 
     @OnClick(R.id.chooser_button)

@@ -70,11 +70,11 @@ public class EasyImage implements EasyImageConfig {
     }
 
 
-    private static Intent createGalleryIntent(@NonNull Context context, int type, boolean allowMultiple) {
+    private static Intent createGalleryIntent(@NonNull Context context, int type) {
         storeType(context, type);
         Intent intent = plainGalleryPickerIntent();
         if (Build.VERSION.SDK_INT >= 18) {
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, configuration(context).allowsMultiplePickingInGallery());
         }
         return intent;
     }
@@ -131,7 +131,7 @@ public class EasyImage implements EasyImageConfig {
         Intent galleryIntent;
 
         if (showGallery) {
-            galleryIntent = createGalleryIntent(context, type, true);
+            galleryIntent = createGalleryIntent(context, type);
         } else {
             galleryIntent = createDocumentsIntent(context, type);
         }
@@ -222,22 +222,20 @@ public class EasyImage implements EasyImageConfig {
     /**
      * Opens default galery or a available galleries picker if there is no default
      *
-     * @param type          Custom type of your choice, which will be returned with the images
-     * @param allowMultiple Whether multiple images picking should be available. CAUTION - works only for API 18+
+     * @param type Custom type of your choice, which will be returned with the images
      */
-    public static void openGallery(Activity activity, int type, boolean allowMultiple) {
-        Intent intent = createGalleryIntent(activity, type, allowMultiple);
+    public static void openGallery(Activity activity, int type) {
+        Intent intent = createGalleryIntent(activity, type);
         activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
     /**
      * Opens default galery or a available galleries picker if there is no default
      *
-     * @param type          Custom type of your choice, which will be returned with the images
-     * @param allowMultiple Whether multiple images picking should be available. CAUTION - works only for API 18+
+     * @param type Custom type of your choice, which will be returned with the images
      */
-    public static void openGallery(Fragment fragment, int type, boolean allowMultiple) {
-        Intent intent = createGalleryIntent(fragment.getContext(), type, allowMultiple);
+    public static void openGallery(Fragment fragment, int type) {
+        Intent intent = createGalleryIntent(fragment.getContext(), type);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
@@ -245,10 +243,9 @@ public class EasyImage implements EasyImageConfig {
      * Opens default galery or a available galleries picker if there is no default
      *
      * @param type          Custom type of your choice, which will be returned with the images
-     * @param allowMultiple Whether multiple images picking should be available. CAUTION - works only for API 18+
      */
-    public static void openGallery(android.app.Fragment fragment, int type, boolean allowMultiple) {
-        Intent intent = createGalleryIntent(fragment.getActivity(), type, allowMultiple);
+    public static void openGallery(android.app.Fragment fragment, int type) {
+        Intent intent = createGalleryIntent(fragment.getActivity(), type);
         fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
     }
 
@@ -354,11 +351,10 @@ public class EasyImage implements EasyImageConfig {
         try {
             ClipData clipData = data.getClipData();
             List<File> files = new ArrayList<>();
-            if (clipData == null)
-            {
-                Uri uri = data.getData ();
-                File file = EasyImageFiles.pickedExistingPicture (activity, uri);
-                files.add (file);
+            if (clipData == null) {
+                Uri uri = data.getData();
+                File file = EasyImageFiles.pickedExistingPicture(activity, uri);
+                files.add(file);
             } else {
                 for (int i = 0; i < clipData.getItemCount(); i++) {
                     Uri uri = clipData.getItemAt(i).getUri();
@@ -458,6 +454,16 @@ public class EasyImage implements EasyImageConfig {
             return this;
         }
 
+        public Configuration setAllowMultiplePickInGallery(boolean allowMultiple) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit()
+                    .putBoolean(BundleKeys.ALLOW_MULTIPLE, allowMultiple)
+                    .commit();
+            return this;
+        }
+
+        public boolean allowsMultiplePickingInGallery() {
+            return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.ALLOW_MULTIPLE, false);
+        }
 
         /**
          * Use this method if you want your picked gallery or documents pictures to be duplicated into public, other apps accessible, directory.
