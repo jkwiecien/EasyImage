@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
          * If saving in public app folder inside Pictures by using saveInAppExternalFilesDir,
          * write permission after SDK 18 is NOT required as can be seen in manifest.
          *
-         * If saving in the root of sdcard inside Pictures by using saveInRootPicturesDirectory,
+         * If saving in the root of sdcard inside Pictures by using saveTakenPhotosInPublicPicturesDirectory,
          * permission is required.
          *
          * By default, if no configuration is set Images Folder Name will be EasyImage, and save

@@ -35,15 +35,9 @@ class EasyImageFiles {
         return dir;
     }
 
-    public static File publicRootDir(@NonNull Context context) {
+    public static File getPublicPicturesDirectory() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
     }
-
-//    public static File publicRootPicturesDir(Context context) {
-//        File dir = new File(publicRootDir(context), getFolderName(context));
-//        if (!dir.exists()) dir.mkdirs();
-//        return dir;
-//    }
 
     public static File publicAppExternalDir(@NonNull Context context) {
         return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -61,12 +55,6 @@ class EasyImageFiles {
         if (!privateTempDir.exists()) privateTempDir.mkdirs();
         return privateTempDir;
     }
-
-//    public static File publicAppExternalFilesDir(Context context) {
-//        File dir = new File(publicAppExternalDir(context), getFolderName(context));
-//        if (!dir.exists()) dir.mkdirs();
-//        return dir;
-//    }
 
     public static void writeToFile(InputStream in, File file) {
         try {
@@ -110,7 +98,6 @@ class EasyImageFiles {
     }
 
     public static File getCameraPicturesLocation(@NonNull Context context) throws IOException {
-
         File cacheDir = context.getCacheDir();
 
         if (isExternalStorageWritable()) {
