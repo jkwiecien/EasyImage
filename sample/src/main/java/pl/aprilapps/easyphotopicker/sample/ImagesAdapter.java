@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -23,10 +22,11 @@ import butterknife.ButterKnife;
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder> {
 
     private Context context;
-    private List<File> imagesFiles = new ArrayList<>();
+    private List<File> imagesFiles;
 
-    public ImagesAdapter(Context context) {
+    public ImagesAdapter(Context context, List<File> imagesFiles) {
         this.context = context;
+        this.imagesFiles = imagesFiles;
     }
 
     @Override
@@ -47,12 +47,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
     @Override
     public int getItemCount() {
         return imagesFiles.size();
-    }
-
-    public void updateList(List<File> files) {
-        imagesFiles.clear();
-        imagesFiles.addAll(files);
-        notifyDataSetChanged();
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {

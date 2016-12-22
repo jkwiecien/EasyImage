@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -23,6 +24,8 @@ import pl.tajchert.nammu.PermissionCallback;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String PHOTOS_KEY = "easy_image_photos_list";
+
     @Bind(R.id.recycler_view)
     protected RecyclerView recyclerView;
 
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ImagesAdapter imagesAdapter;
 
+    private ArrayList<File> photos = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +43,11 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Nammu.init(this);
 
-        imagesAdapter = new ImagesAdapter(this);
+        if (savedInstanceState != null) {
+            photos = (ArrayList<File>) savedInstanceState.getSerializable(PHOTOS_KEY);
+        }
+
+        imagesAdapter = new ImagesAdapter(this, photos);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(imagesAdapter);
@@ -60,6 +69,12 @@ public class MainActivity extends AppCompatActivity {
                 .setAllowMultiplePickInGallery(true);
 
         checkGalleryAppAvailability();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(PHOTOS_KEY, photos);
     }
 
     private void checkGalleryAppAvailability() {
@@ -162,7 +177,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onPhotosReturned(List<File> photos) {
-        imagesAdapter.updateList(photos);
+        this.photos.clear();
+        this.photos.addAll(photos);
+        imagesAdapter.notifyDataSetChanged();
     }
 
     @Override

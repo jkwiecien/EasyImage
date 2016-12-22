@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".MainActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/darker_gray"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <Button
+            android:id="@+id/camera_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_camera_alt_black_24dp"
+            android:text="Take with camera" />
+
+        <Button
+            android:id="@+id/documents_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_documents_black_24dp"
+            android:paddingLeft="8dp"
+            android:text="Pick from docs" />
+
+        <Button
+            android:id="@+id/gallery_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_insert_photo_black_24dp"
+            android:text="Pick from gallery" />
+
+        <Button
+            android:id="@+id/chooser_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_assistant_black_24dp"
+            android:text="Display chooser with documents" />
+
+        <Button
+            android:id="@+id/chooser_button2"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_assistant_black_24dp"
+            android:text="Display chooser with Gallery" />
+
+    </LinearLayout>
+
+</LinearLayout>
