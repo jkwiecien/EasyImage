@@ -24,16 +24,23 @@ public class EasyImageConfiguration implements Constants {
         return this;
     }
 
-    public EasyImageConfiguration setImagesStorageDirctory(ImagesStorageDirectory storage) {
+    public EasyImageConfiguration setAllowMultiplePickInGallery(boolean allowMultiple) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(BundleKeys.STORAGE_DIRECTORY, storage.toString())
+                .putBoolean(BundleKeys.ALLOW_MULTIPLE, allowMultiple)
                 .commit();
         return this;
     }
 
-    public EasyImageConfiguration setAllowMultiplePickInGallery(boolean allowMultiple) {
+    public EasyImageConfiguration setCopyTakenPhotosToPublicGalleryAppFolder(boolean copy) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putBoolean(BundleKeys.ALLOW_MULTIPLE, allowMultiple)
+                .putBoolean(BundleKeys.COPY_TAKEN_PHOTOS, copy)
+                .commit();
+        return this;
+    }
+
+    public EasyImageConfiguration setCopyPickedImagesToPublicGalleryAppFolder(boolean copy) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putBoolean(BundleKeys.COPY_PICKED_IMAGES, copy)
                 .commit();
         return this;
     }
@@ -46,13 +53,12 @@ public class EasyImageConfiguration implements Constants {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.ALLOW_MULTIPLE, false);
     }
 
-    public File getImagesStorageDirectory() {
-        String savedPref = PreferenceManager.getDefaultSharedPreferences(context).getString(BundleKeys.STORAGE_DIRECTORY, ImagesStorageDirectory.CACHE.toString());
-        ImagesStorageDirectory root = ImagesStorageDirectory.valueOf(savedPref);
-        File rootDir = root.getRootDir(context);
-        File appDir = new File(rootDir, getFolderName());
-        if (!appDir.exists()) rootDir.mkdirs();
-        return appDir;
+    public boolean shouldCopyTakenPhotosToPublicGalleryAppFolder() {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.COPY_TAKEN_PHOTOS, false);
+    }
+
+    public boolean shouldCopyPickedImagesToPublicGalleryAppFolder() {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.COPY_PICKED_IMAGES, false);
     }
 
 }

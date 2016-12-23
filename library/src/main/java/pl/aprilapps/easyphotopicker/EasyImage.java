@@ -16,7 +16,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -24,6 +23,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static pl.aprilapps.easyphotopicker.EasyImageFiles.singleFileList;
 
 
 /**
@@ -52,9 +53,7 @@ public class EasyImage implements Constants {
 
     private static Uri createCameraPictureFile(@NonNull Context context) throws IOException {
         File imagePath = EasyImageFiles.getCameraPicturesLocation(context);
-        String packageName = context.getApplicationContext().getPackageName();
-        String authority = packageName + ".easyphotopicker.fileprovider";
-        Uri uri = FileProvider.getUriForFile(context, authority, imagePath);
+        Uri uri = EasyImageFiles.getUriToFile(context, imagePath);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putString(KEY_PHOTO_URI, uri.toString());
         editor.putString(KEY_LAST_CAMERA_PHOTO, imagePath.toString());
@@ -343,9 +342,11 @@ public class EasyImage implements Constants {
         try {
             Uri photoPath = data.getData();
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
-            List<File> files = new ArrayList<>();
-            files.add(photoFile);
-            callbacks.onImagesPicked(files, ImageSource.DOCUMENTS, restoreType(activity));
+            callbacks.onImagesPicked(singleFileList(photoFile), ImageSource.DOCUMENTS, restoreType(activity));
+
+            if (configuration(activity).shouldCopyTakenPhotosToPublicGalleryAppFolder()) {
+                EasyImageFiles.copyFilesInSeparateThread(activity, singleFileList(photoFile));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             callbacks.onImagePickerError(e, ImageSource.DOCUMENTS, restoreType(activity));
@@ -366,6 +367,10 @@ public class EasyImage implements Constants {
                     File file = EasyImageFiles.pickedExistingPicture(activity, uri);
                     files.add(file);
                 }
+            }
+
+            if (configuration(activity).shouldCopyTakenPhotosToPublicGalleryAppFolder()) {
+                EasyImageFiles.copyFilesInSeparateThread(activity, files);
             }
 
             callbacks.onImagesPicked(files, ImageSource.GALLERY, restoreType(activity));
@@ -390,6 +395,10 @@ public class EasyImage implements Constants {
                 Exception e = new IllegalStateException("Unable to get the picture returned from camera");
                 callbacks.onImagePickerError(e, ImageSource.CAMERA, restoreType(activity));
             } else {
+                if (configuration(activity).shouldCopyTakenPhotosToPublicGalleryAppFolder()) {
+                    EasyImageFiles.copyFilesInSeparateThread(activity, singleFileList(photoFile));
+                }
+
                 callbacks.onImagesPicked(files, ImageSource.CAMERA, restoreType(activity));
             }
 
@@ -413,9 +422,9 @@ public class EasyImage implements Constants {
     public static void clearConfiguration(@NonNull Context context) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .remove(BundleKeys.FOLDER_NAME)
-                .remove(BundleKeys.FOLDER_LOCATION)
                 .remove(BundleKeys.ALLOW_MULTIPLE)
-                .remove(BundleKeys.STORAGE_DIRECTORY)
+                .remove(BundleKeys.COPY_TAKEN_PHOTOS)
+                .remove(BundleKeys.COPY_PICKED_IMAGES)
                 .apply();
     }
 

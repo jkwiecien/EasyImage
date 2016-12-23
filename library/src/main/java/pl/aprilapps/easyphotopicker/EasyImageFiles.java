@@ -2,36 +2,41 @@ package pl.aprilapps.easyphotopicker;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import timber.log.Timber;
 
 /**
  * Created by Jacek Kwiecień on 14.12.15.
  */
 class EasyImageFiles implements Constants {
 
-
-    public static String getFolderName(@NonNull Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(BundleKeys.FOLDER_NAME, DEFAULT_FOLDER_NAME);
+    private static String getFolderName(@NonNull Context context) {
+        return EasyImage.configuration(context).getFolderName();
     }
 
-    public static File tempImageDirectory(@NonNull Context context) {
+    private static File tempImageDirectory(@NonNull Context context) {
         File privateTempDir = new File(context.getCacheDir(), DEFAULT_FOLDER_NAME);
         if (!privateTempDir.exists()) privateTempDir.mkdirs();
         return privateTempDir;
     }
 
-    public static void writeToFile(InputStream in, File file) {
+    private static void writeToFile(InputStream in, File file) {
         try {
             OutputStream out = new FileOutputStream(file);
             byte[] buf = new byte[1024];
@@ -41,14 +46,61 @@ class EasyImageFiles implements Constants {
             }
             out.close();
             in.close();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static File pickedExistingPicture(@NonNull Context context, Uri photoUri) throws IOException {
+    private static void copyFile(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        writeToFile(in, dst);
+    }
+
+    static void copyFilesInSeparateThread(final Context context, final List<File> filesToCopy) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<File> copiedFiles = new ArrayList<>();
+                for (File fileToCopy : filesToCopy) {
+                    File dstDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getFolderName(context));
+                    if (!dstDir.exists()) dstDir.mkdirs();
+                    File dstFile = new File(dstDir, fileToCopy.getName());
+                    try {
+                        dstFile.createNewFile();
+                        copyFile(fileToCopy, dstFile);
+                        copiedFiles.add(dstFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                scanCopiedImages(context, copiedFiles);
+            }
+        }).run();
+    }
+
+    static List<File> singleFileList(File file) {
+        List<File> list = new ArrayList<>();
+        list.add(file);
+        return list;
+    }
+
+    static void scanCopiedImages(Context context, List<File> copiedImages) {
+        String[] paths = new String[copiedImages.size()];
+        for (int i = 0; i < copiedImages.size(); i++) {
+            paths[i] = copiedImages.get(i).toString();
+        }
+
+        MediaScannerConnection.scanFile(context,
+                paths, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        Timber.d("Scanned " + path + ":");
+                        Timber.d("-> uri=" + uri);
+                    }
+                });
+    }
+
+    static File pickedExistingPicture(@NonNull Context context, Uri photoUri) throws IOException {
         InputStream pictureInputStream = context.getContentResolver().openInputStream(photoUri);
         File directory = tempImageDirectory(context);
         File photoFile = new File(directory, UUID.randomUUID().toString() + "." + getMimeType(context, photoUri));
@@ -57,21 +109,16 @@ class EasyImageFiles implements Constants {
         return photoFile;
     }
 
-    public static File getCameraPicturesLocation(@NonNull Context context) throws IOException {
+    static File getCameraPicturesLocation(@NonNull Context context) throws IOException {
         File dir = tempImageDirectory(context);
         return File.createTempFile(UUID.randomUUID().toString(), ".jpg", dir);
-    }
-
-    private static boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /**
      * To find out the extension of required object in given uri
      * Solution by http://stackoverflow.com/a/36514823/1171484
      */
-    public static String getMimeType(@NonNull Context context, @NonNull Uri uri) {
+    private static String getMimeType(@NonNull Context context, @NonNull Uri uri) {
         String extension;
 
         //Check uri format to avoid null
@@ -87,6 +134,12 @@ class EasyImageFiles implements Constants {
         }
 
         return extension;
+    }
+
+    static Uri getUriToFile(@NonNull Context context, @NonNull File file) {
+        String packageName = context.getApplicationContext().getPackageName();
+        String authority = packageName + ".easyphotopicker.fileprovider";
+        return FileProvider.getUriForFile(context, authority, file);
     }
 
 }

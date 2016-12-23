@@ -19,7 +19,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
-import pl.aprilapps.easyphotopicker.ImagesStorageDirectory;
 import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 
@@ -70,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
         EasyImage.configuration(this)
                 .setImagesFolderName("EasyImage sample")
-                .setImagesStorageDirctory(ImagesStorageDirectory.PUBLIC_GALLERY)
+                .setCopyTakenPhotosToPublicGalleryAppFolder(true)
+                .setCopyPickedImagesToPublicGalleryAppFolder(true)
                 .setAllowMultiplePickInGallery(true);
 
         checkGalleryAppAvailability();

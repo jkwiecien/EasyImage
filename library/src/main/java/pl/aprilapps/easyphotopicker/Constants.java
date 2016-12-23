@@ -19,8 +19,8 @@ public interface Constants {
 
     interface BundleKeys {
         String FOLDER_NAME = "pl.aprilapps.folder_name";
-        String FOLDER_LOCATION = "pl.aprilapps.folder_location";
-        String ALLOW_MULTIPLE = "pl.aprilapps.allow_multiple";
-        String STORAGE_DIRECTORY = "pl.aprilapps.directory_type";
+        String ALLOW_MULTIPLE = "pl.aprilapps.easyimage.allow_multiple";
+        String COPY_TAKEN_PHOTOS = "pl.aprilapps.easyimage.copy_taken_photos";
+        String COPY_PICKED_IMAGES = "pl.aprilapps.easyimage.copy_picked_images";
     }
 }
