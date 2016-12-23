@@ -18,10 +18,7 @@ import java.util.UUID;
 /**
  * Created by Jacek Kwiecień on 14.12.15.
  */
-class EasyImageFiles {
-
-    public static String DEFAULT_FOLDER_NAME = "EasyImage";
-    public static String TEMP_FOLDER_NAME = "Temp";
+class EasyImageFiles implements Constants {
 
 
     public static String getFolderName(@NonNull Context context) {
@@ -29,29 +26,7 @@ class EasyImageFiles {
     }
 
     public static File tempImageDirectory(@NonNull Context context) {
-        boolean publicTemp = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(BundleKeys.PUBLIC_TEMP, false);
-        File dir = publicTemp ? publicTempDir(context) : privateTempDir(context);
-        if (!dir.exists()) dir.mkdirs();
-        return dir;
-    }
-
-    public static File getPublicPicturesDirectory() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-    }
-
-    public static File publicAppExternalDir(@NonNull Context context) {
-        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    }
-
-    public static File publicTempDir(@NonNull Context context) {
-        File cameraPicturesDir = new File(EasyImageFiles.getFolderLocation(context), EasyImageFiles.getFolderName(context));
-        File publicTempDir = new File(cameraPicturesDir, TEMP_FOLDER_NAME);
-        if (!publicTempDir.exists()) publicTempDir.mkdirs();
-        return publicTempDir;
-    }
-
-    private static File privateTempDir(@NonNull Context context) {
-        File privateTempDir = new File(context.getApplicationContext().getCacheDir(), getFolderName(context));
+        File privateTempDir = new File(context.getCacheDir(), DEFAULT_FOLDER_NAME);
         if (!privateTempDir.exists()) privateTempDir.mkdirs();
         return privateTempDir;
     }
@@ -82,32 +57,9 @@ class EasyImageFiles {
         return photoFile;
     }
 
-    /**
-     * Default folder location will be inside app public directory. That way write permissions after SDK 18 aren't required and contents are deleted if app is uninstalled.
-     *
-     * @param context context
-     */
-    public static String getFolderLocation(@NonNull Context context) {
-        File publicAppExternalDir = publicAppExternalDir(context);
-        String defaultFolderLocation = null;
-        if (publicAppExternalDir != null) {
-            defaultFolderLocation = publicAppExternalDir.getPath();
-        }
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(BundleKeys.FOLDER_LOCATION, defaultFolderLocation);
-    }
-
     public static File getCameraPicturesLocation(@NonNull Context context) throws IOException {
-        File cacheDir = context.getCacheDir();
-
-        if (isExternalStorageWritable()) {
-            cacheDir = context.getExternalCacheDir();
-        }
-
-        File dir = new File(cacheDir, DEFAULT_FOLDER_NAME);
-        if (!dir.exists()) dir.mkdirs();
-        File imageFile = File.createTempFile(UUID.randomUUID().toString(), ".jpg", dir);
-        return imageFile;
+        File dir = tempImageDirectory(context);
+        return File.createTempFile(UUID.randomUUID().toString(), ".jpg", dir);
     }
 
     private static boolean isExternalStorageWritable() {

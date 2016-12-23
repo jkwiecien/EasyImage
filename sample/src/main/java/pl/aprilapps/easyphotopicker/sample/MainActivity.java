@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
+import pl.aprilapps.easyphotopicker.ImagesStorageDirectory;
 import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 
@@ -52,20 +53,24 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(imagesAdapter);
 
-        /**
-         * If saving in public app folder inside Pictures by using saveInAppExternalFilesDir,
-         * write permission after SDK 18 is NOT required as can be seen in manifest.
-         *
-         * If saving in the root of sdcard inside Pictures by using saveTakenPhotosInPublicPicturesDirectory,
-         * permission is required.
-         *
-         * By default, if no configuration is set Images Folder Name will be EasyImage, and save
-         * location will be in the ExternalFilesDir of the app.
-         * */
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
+                @Override
+                public void permissionGranted() {
+                    //Nothing, this sample saves to Public gallery so it needs permission
+                }
+
+                @Override
+                public void permissionRefused() {
+                    finish();
+                }
+            });
+        }
+
         EasyImage.configuration(this)
-                .setImagesFolderName("Sample app images")
-                .saveInAppExternalFilesDir()
-                .setCopyExistingPicturesToPublicLocation(true)
+                .setImagesFolderName("EasyImage sample")
+                .setImagesStorageDirctory(ImagesStorageDirectory.PUBLIC_GALLERY)
                 .setAllowMultiplePickInGallery(true);
 
         checkGalleryAppAvailability();
@@ -92,24 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.camera_button)
     protected void onTakePhotoClicked() {
-
-        /**Permission check only required if saving pictures to root of sdcard*/
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            EasyImage.openCamera(this, 0);
-        } else {
-            Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
-                @Override
-                public void permissionGranted() {
-                    EasyImage.openCamera(MainActivity.this, 0);
-                }
-
-                @Override
-                public void permissionRefused() {
-
-                }
-            });
-        }
+        EasyImage.openCamera(this, 0);
     }
 
     @OnClick(R.id.documents_button)
@@ -158,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
                 //Some error handling
+                e.printStackTrace();
             }
 
             @Override
@@ -176,10 +165,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void onPhotosReturned(List<File> photos) {
-        this.photos.clear();
-        this.photos.addAll(photos);
+    private void onPhotosReturned(List<File> returnedPhotos) {
+        photos.addAll(returnedPhotos);
         imagesAdapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(photos.size() - 1);
     }
 
     @Override

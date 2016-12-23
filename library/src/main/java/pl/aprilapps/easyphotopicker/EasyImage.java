@@ -30,7 +30,7 @@ import java.util.List;
  * Created by Jacek Kwiecień on 16.10.2015.
  */
 @SuppressWarnings({"unused", "FieldCanBeLocal", "ResultOfMethodCallIgnored"})
-public class EasyImage implements EasyImageConfig {
+public class EasyImage implements Constants {
 
     private static final boolean SHOW_GALLERY_IN_CHOOSER = false;
 
@@ -153,7 +153,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithDocuments(Activity activity, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, type);
-            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_DOCUMENTS);
+            activity.startActivityForResult(intent, RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_DOCUMENTS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -162,7 +162,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithDocuments(Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_DOCUMENTS);
+            fragment.startActivityForResult(intent, RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_DOCUMENTS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -171,7 +171,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithDocuments(android.app.Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_DOCUMENTS);
+            fragment.startActivityForResult(intent, RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_DOCUMENTS);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -180,7 +180,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithGallery(Activity activity, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(activity, chooserTitle, true, type);
-            activity.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_GALLERY);
+            activity.startActivityForResult(intent, RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_GALLERY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -189,7 +189,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithGallery(Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_GALLERY);
+            fragment.startActivityForResult(intent, RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_GALLERY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -198,7 +198,7 @@ public class EasyImage implements EasyImageConfig {
     public static void openChooserWithGallery(android.app.Fragment fragment, @Nullable String chooserTitle, int type) {
         try {
             Intent intent = createChooserIntent(fragment.getActivity(), chooserTitle, true, type);
-            fragment.startActivityForResult(intent, REQ_SOURCE_CHOOSER | REQ_PICK_PICTURE_FROM_GALLERY);
+            fragment.startActivityForResult(intent, RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_GALLERY);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -206,17 +206,17 @@ public class EasyImage implements EasyImageConfig {
 
     public static void openDocuments(Activity activity, int type) {
         Intent intent = createDocumentsIntent(activity, type);
-        activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
+        activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS);
     }
 
     public static void openDocuments(Fragment fragment, int type) {
         Intent intent = createDocumentsIntent(fragment.getContext(), type);
-        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
+        fragment.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS);
     }
 
     public static void openDocuments(android.app.Fragment fragment, int type) {
         Intent intent = createDocumentsIntent(fragment.getActivity(), type);
-        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_DOCUMENTS);
+        fragment.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS);
     }
 
     /**
@@ -226,7 +226,7 @@ public class EasyImage implements EasyImageConfig {
      */
     public static void openGallery(Activity activity, int type) {
         Intent intent = createGalleryIntent(activity, type);
-        activity.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
+        activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY);
     }
 
     /**
@@ -236,7 +236,7 @@ public class EasyImage implements EasyImageConfig {
      */
     public static void openGallery(Fragment fragment, int type) {
         Intent intent = createGalleryIntent(fragment.getContext(), type);
-        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
+        fragment.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY);
     }
 
     /**
@@ -246,22 +246,22 @@ public class EasyImage implements EasyImageConfig {
      */
     public static void openGallery(android.app.Fragment fragment, int type) {
         Intent intent = createGalleryIntent(fragment.getActivity(), type);
-        fragment.startActivityForResult(intent, REQ_PICK_PICTURE_FROM_GALLERY);
+        fragment.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY);
     }
 
     public static void openCamera(Activity activity, int type) {
         Intent intent = createCameraIntent(activity, type);
-        activity.startActivityForResult(intent, REQ_TAKE_PICTURE);
+        activity.startActivityForResult(intent, RequestCodes.TAKE_PICTURE);
     }
 
     public static void openCamera(Fragment fragment, int type) {
         Intent intent = createCameraIntent(fragment.getActivity(), type);
-        fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
+        fragment.startActivityForResult(intent, RequestCodes.TAKE_PICTURE);
     }
 
     public static void openCamera(android.app.Fragment fragment, int type) {
         Intent intent = createCameraIntent(fragment.getActivity(), type);
-        fragment.startActivityForResult(intent, REQ_TAKE_PICTURE);
+        fragment.startActivityForResult(intent, RequestCodes.TAKE_PICTURE);
     }
 
     @Nullable
@@ -275,16 +275,16 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, @NonNull Callbacks callbacks) {
-        boolean isEasyImage = (requestCode & EASYIMAGE_IDENTIFICATOR) > 0;
+        boolean isEasyImage = (requestCode & RequestCodes.EASYIMAGE_IDENTIFICATOR) > 0;
         if (isEasyImage) {
-            requestCode &= ~REQ_SOURCE_CHOOSER;
-            if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+            requestCode &= ~RequestCodes.SOURCE_CHOOSER;
+            if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY || requestCode == RequestCodes.TAKE_PICTURE || requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
                 if (resultCode == Activity.RESULT_OK) {
-                    if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS && !isPhoto(data)) {
+                    if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && !isPhoto(data)) {
                         onPictureReturnedFromDocuments(data, activity, callbacks);
-                    } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY && !isPhoto(data)) {
+                    } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && !isPhoto(data)) {
                         onPictureReturnedFromGallery(data, activity, callbacks);
-                    } else if (requestCode == EasyImageConfig.REQ_TAKE_PICTURE) {
+                    } else if (requestCode == RequestCodes.TAKE_PICTURE) {
                         onPictureReturnedFromCamera(activity, callbacks);
                     } else if (isPhoto(data)) {
                         onPictureReturnedFromCamera(activity, callbacks);
@@ -293,9 +293,9 @@ public class EasyImage implements EasyImageConfig {
                     }
                 } else {
                     callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
-                    if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+                    if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
                         callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
-                    } else if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY) {
+                    } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY) {
                         callbacks.onCanceled(ImageSource.GALLERY, restoreType(activity));
                     } else {
                         callbacks.onCanceled(ImageSource.CAMERA, restoreType(activity));
@@ -310,7 +310,7 @@ public class EasyImage implements EasyImageConfig {
     }
 
     public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == EasyImageConfig.REQ_SOURCE_CHOOSER || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_GALLERY || requestCode == EasyImageConfig.REQ_TAKE_PICTURE || requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+        if (requestCode == RequestCodes.SOURCE_CHOOSER || requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY || requestCode == RequestCodes.TAKE_PICTURE || requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
             return true;
         }
         return false;
@@ -377,7 +377,6 @@ public class EasyImage implements EasyImageConfig {
 
     private static void onPictureReturnedFromCamera(Activity activity, @NonNull Callbacks callbacks) {
         try {
-
             String lastImageUri = PreferenceManager.getDefaultSharedPreferences(activity).getString(KEY_PHOTO_URI, null);
             if (!TextUtils.isEmpty(lastImageUri)) {
                 revokeWritePermission(activity, Uri.parse(lastImageUri));
@@ -405,14 +404,6 @@ public class EasyImage implements EasyImageConfig {
         }
     }
 
-    public static void clearPublicTemp(@NonNull Context context) {
-        List<File> tempFiles = new ArrayList<>();
-        File[] files = EasyImageFiles.publicTempDir(context).listFiles();
-        for (File file : files) {
-            file.delete();
-        }
-    }
-
 
     /**
      * Method to clear configuration. Would likely be used in onDestroy(), onDestroyView()...
@@ -423,11 +414,12 @@ public class EasyImage implements EasyImageConfig {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .remove(BundleKeys.FOLDER_NAME)
                 .remove(BundleKeys.FOLDER_LOCATION)
-                .remove(BundleKeys.PUBLIC_TEMP)
+                .remove(BundleKeys.ALLOW_MULTIPLE)
+                .remove(BundleKeys.STORAGE_DIRECTORY)
                 .apply();
     }
 
-    public static Configuration configuration(@NonNull Context context) {
-        return new Configuration(context);
+    public static EasyImageConfiguration configuration(@NonNull Context context) {
+        return new EasyImageConfiguration(context);
     }
 }
