@@ -291,7 +291,8 @@ public class EasyImage implements Constants {
                         onPictureReturnedFromDocuments(data, activity, callbacks);
                     }
                 } else {
-                    callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
+                     if (requestCode == EasyImageConfig.REQ_PICK_PICTURE_FROM_DOCUMENTS) {
+                        callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
                     if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
                         callbacks.onCanceled(ImageSource.DOCUMENTS, restoreType(activity));
                     } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY) {
