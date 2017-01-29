@@ -6,7 +6,6 @@ package pl.aprilapps.easyphotopicker;
 public interface Constants {
 
     String DEFAULT_FOLDER_NAME = "EasyImage";
-    String TEMP_FOLDER_NAME = "Temp";
 
     interface RequestCodes {
         int EASYIMAGE_IDENTIFICATOR = 0b1101101100; //876
