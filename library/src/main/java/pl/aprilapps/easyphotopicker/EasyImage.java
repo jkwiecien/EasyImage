@@ -343,7 +343,7 @@ public class EasyImage implements Constants {
             File photoFile = EasyImageFiles.pickedExistingPicture(activity, photoPath);
             callbacks.onImagesPicked(singleFileList(photoFile), ImageSource.DOCUMENTS, restoreType(activity));
 
-            if (configuration(activity).shouldCopyTakenPhotosToPublicGalleryAppFolder()) {
+            if (configuration(activity).shouldCopyPickedImagesToPublicGalleryAppFolder()) {
                 EasyImageFiles.copyFilesInSeparateThread(activity, singleFileList(photoFile));
             }
         } catch (Exception e) {
@@ -368,7 +368,7 @@ public class EasyImage implements Constants {
                 }
             }
 
-            if (configuration(activity).shouldCopyTakenPhotosToPublicGalleryAppFolder()) {
+            if (configuration(activity).shouldCopyPickedImagesToPublicGalleryAppFolder()) {
                 EasyImageFiles.copyFilesInSeparateThread(activity, files);
             }
 
