@@ -21,7 +21,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
+    compile "com.android.support:support-fragment:$supportLibraryVersion"
     compile 'com.jakewharton.timber:timber:4.4.0'
 }
 
