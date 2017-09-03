@@ -15,8 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -61,10 +64,16 @@ class EasyImageFiles implements Constants {
             @Override
             public void run() {
                 List<File> copiedFiles = new ArrayList<>();
+                int i = 1;
                 for (File fileToCopy : filesToCopy) {
                     File dstDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getFolderName(context));
                     if (!dstDir.exists()) dstDir.mkdirs();
-                    File dstFile = new File(dstDir, fileToCopy.getName());
+
+                    String[] filenameSplit = fileToCopy.getName().split("\\.");
+                    String extension = "." + filenameSplit[filenameSplit.length-1];
+                    String filename = String.format("IMG_%s_%d.%s", new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()), i, extension);
+
+                    File dstFile = new File(dstDir, filename);
                     try {
                         dstFile.createNewFile();
                         copyFile(fileToCopy, dstFile);
@@ -72,6 +81,7 @@ class EasyImageFiles implements Constants {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    i++;
                 }
                 scanCopiedImages(context, copiedFiles);
             }
