@@ -106,6 +106,14 @@ public class EasyImage implements Constants {
         }
     }
 
+    private static Intent createDefaultPickerIntent(@NonNull Context context){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, configuration(context).allowsMultiplePickingInGallery());
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        return intent;
+    }
+
     private static Intent createChooserIntent(@NonNull Context context, @Nullable String chooserTitle, int type) throws IOException {
         return createChooserIntent(context, chooserTitle, SHOW_GALLERY_IN_CHOOSER, type);
     }
@@ -165,6 +173,16 @@ public class EasyImage implements Constants {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void openDefaultPicker(Activity activity,@Nullable String chooserTitle){
+        Intent intent = createDefaultPickerIntent(activity);
+        activity.startActivityForResult(Intent.createChooser(intent, chooserTitle), RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_GALLERY);
+    }
+
+    public static void openDefaultPicker(Fragment fragment,@Nullable String chooserTitle){
+        Intent intent = createDefaultPickerIntent(fragment.getContext());
+        fragment.startActivityForResult(Intent.createChooser(intent, chooserTitle), RequestCodes.SOURCE_CHOOSER | RequestCodes.PICK_PICTURE_FROM_GALLERY);
     }
 
     public static void openChooserWithDocuments(android.app.Fragment fragment, @Nullable String chooserTitle, int type) {
