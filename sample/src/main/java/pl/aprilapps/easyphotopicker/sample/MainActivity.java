@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Nammu.init(this);
+        Nammu.init(getApplicationContext());
 
         if (savedInstanceState != null) {
             photos = (ArrayList<File>) savedInstanceState.getSerializable(PHOTOS_KEY);
