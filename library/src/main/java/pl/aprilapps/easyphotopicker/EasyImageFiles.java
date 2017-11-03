@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -19,10 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
-
-import timber.log.Timber;
 
 /**
  * Created by Jacek Kwiecień on 14.12.15.
@@ -70,7 +68,7 @@ class EasyImageFiles implements Constants {
                     if (!dstDir.exists()) dstDir.mkdirs();
 
                     String[] filenameSplit = fileToCopy.getName().split("\\.");
-                    String extension = "." + filenameSplit[filenameSplit.length-1];
+                    String extension = "." + filenameSplit[filenameSplit.length - 1];
                     String filename = String.format("IMG_%s_%d.%s", new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()), i, extension);
 
                     File dstFile = new File(dstDir, filename);
@@ -104,8 +102,8 @@ class EasyImageFiles implements Constants {
                 paths, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
-                        Timber.d("Scanned " + path + ":");
-                        Timber.d("-> uri=" + uri);
+                        Log.d(getClass().getSimpleName(), "Scanned " + path + ":");
+                        Log.d(getClass().getSimpleName(), "-> uri=" + uri);
                     }
                 });
     }
