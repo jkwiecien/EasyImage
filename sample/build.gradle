@@ -24,7 +24,6 @@ dependencies {
     compile(project(':library'))
     implementation "com.android.support:appcompat-v7:$support_library_version"
     implementation "com.android.support:design:$support_library_version"
-    implementation 'com.jakewharton:butterknife:7.0.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.github.tajchert:nammu:1.1.1'
 }
