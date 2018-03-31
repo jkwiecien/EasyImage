@@ -9,11 +9,12 @@ public interface Constants {
 
     interface RequestCodes {
         int EASYIMAGE_IDENTIFICATOR = 0b1101101100; //876
-        int SOURCE_CHOOSER = 1 << 14;
+        int SOURCE_CHOOSER = 1 << 15;
 
         int PICK_PICTURE_FROM_DOCUMENTS = EASYIMAGE_IDENTIFICATOR + (1 << 11);
         int PICK_PICTURE_FROM_GALLERY = EASYIMAGE_IDENTIFICATOR + (1 << 12);
         int TAKE_PICTURE = EASYIMAGE_IDENTIFICATOR + (1 << 13);
+        int CAPTURE_VIDEO = EASYIMAGE_IDENTIFICATOR + (1 << 14);
     }
 
     interface BundleKeys {
