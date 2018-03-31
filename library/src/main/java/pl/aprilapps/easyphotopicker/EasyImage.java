@@ -390,6 +390,16 @@ public class EasyImage implements Constants {
             return null;
         }
     }
+    public static File lastlyTakenButCanceledVideo(@NonNull Context context) {
+        String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_VIDEO, null);
+        if (filePath == null) return null;
+        File file = new File(filePath);
+        if (file.exists()) {
+            return file;
+        } else {
+            return null;
+        }
+    }
 
     private static void onPictureReturnedFromDocuments(Intent data, Activity activity, @NonNull Callbacks callbacks) {
         try {
