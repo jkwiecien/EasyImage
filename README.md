@@ -20,8 +20,29 @@ For this reason, if your app uses `CAMERA` permission, you should check it along
 
 [This library](https://github.com/tajchert/Nammu) will help you manage runtime permissions.
 
-## Gradle dependency
-Get the latest version from jitpack
+## Gradle dependency (Instalation)
+Insert the jitpack respository in your app project `build.gradle` file:
+
+```
+allprojects {
+	repositories {
+	//...
+		maven { url 'https://jitpack.io' }
+	}
+}
+
+```
+
+And then, include the following lines in your app module `build.gradle` file to add EasyImage dependency:
+
+```
+dependencies {
+//...
+    implementation 'com.github.jkwiecien:EasyImage:2.0.4'
+}
+```
+
+Latest version of the EasyImage from jitpack:
 
 [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 
