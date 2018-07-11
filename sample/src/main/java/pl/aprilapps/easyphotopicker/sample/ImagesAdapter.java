@@ -34,7 +34,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Picasso.with(context)
+        Picasso.get()
                 .load(imagesFiles.get(position))
                 .fit()
                 .centerCrop()
