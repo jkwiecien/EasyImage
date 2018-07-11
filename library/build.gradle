@@ -1,4 +1,19 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+def artifactId = 'EasyImage'
+def groupId = 'com.github.jkwiecien'
+
+publishing {
+    publications {
+        library(MavenPublication) {
+            setGroupId(groupId)
+            setArtifactId(artifactId)
+            version version_name
+            artifact(bundleRelease)
+        }
+    }
+}
 
 android {
     compileSdkVersion compile_sdk_version
