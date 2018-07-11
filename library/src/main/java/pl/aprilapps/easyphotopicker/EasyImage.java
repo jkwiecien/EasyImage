@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -35,7 +36,7 @@ public class EasyImage implements Constants {
     private static final boolean SHOW_GALLERY_IN_CHOOSER = false;
 
     public enum ImageSource {
-        GALLERY, DOCUMENTS, CAMERA_IMAGE,CAMERA_VIDEO
+        GALLERY, DOCUMENTS, CAMERA_IMAGE, CAMERA_VIDEO
     }
 
     public interface Callbacks {
@@ -61,6 +62,7 @@ public class EasyImage implements Constants {
         editor.apply();
         return uri;
     }
+
     private static Uri createCameraVideoFile(@NonNull Context context) throws IOException {
         File imagePath = EasyImageFiles.getCameraVideoLocation(context);
         Uri uri = EasyImageFiles.getUriToFile(context, imagePath);
@@ -312,7 +314,9 @@ public class EasyImage implements Constants {
         } else {
             return null;
         }
-    }@Nullable
+    }
+
+    @Nullable
     private static File takenCameraVideo(Context context) throws IOException, URISyntaxException {
         String lastCameraPhoto = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_VIDEO, null);
         if (lastCameraPhoto != null) {
@@ -327,9 +331,9 @@ public class EasyImage implements Constants {
         if (isEasyImage) {
             requestCode &= ~RequestCodes.SOURCE_CHOOSER;
             if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY ||
-                requestCode == RequestCodes.TAKE_PICTURE ||
-                requestCode == RequestCodes.CAPTURE_VIDEO ||
-                requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
+                    requestCode == RequestCodes.TAKE_PICTURE ||
+                    requestCode == RequestCodes.CAPTURE_VIDEO ||
+                    requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
                 if (resultCode == Activity.RESULT_OK) {
                     if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && !isPhoto(data)) {
                         onPictureReturnedFromDocuments(data, activity, callbacks);
@@ -337,7 +341,7 @@ public class EasyImage implements Constants {
                         onPictureReturnedFromGallery(data, activity, callbacks);
                     } else if (requestCode == RequestCodes.TAKE_PICTURE) {
                         onPictureReturnedFromCamera(activity, callbacks);
-                    } else if(requestCode == RequestCodes.CAPTURE_VIDEO){
+                    } else if (requestCode == RequestCodes.CAPTURE_VIDEO) {
                         onVideoReturnedFromCamera(activity, callbacks);
                     } else if (isPhoto(data)) {
                         onPictureReturnedFromCamera(activity, callbacks);
@@ -390,6 +394,7 @@ public class EasyImage implements Constants {
             return null;
         }
     }
+
     public static File lastlyTakenButCanceledVideo(@NonNull Context context) {
         String filePath = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_VIDEO, null);
         if (filePath == null) return null;
