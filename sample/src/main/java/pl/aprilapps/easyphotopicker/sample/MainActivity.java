@@ -85,7 +85,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.camera_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EasyImage.openCamera(MainActivity.this, 0);
+                EasyImage.openCameraForImage(MainActivity.this, 0);
+            }
+        });
+
+        findViewById(R.id.camera_video_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EasyImage.openCameraForVideo(MainActivity.this, 0);
             }
         });
 
@@ -168,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCanceled(EasyImage.ImageSource source, int type) {
                 //Cancel handling, you might wanna remove taken photo if it was canceled
-                if (source == EasyImage.ImageSource.CAMERA) {
+                if (source == EasyImage.ImageSource.CAMERA_IMAGE) {
                     File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);
                     if (photoFile != null) photoFile.delete();
                 }

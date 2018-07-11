@@ -122,6 +122,11 @@ class EasyImageFiles implements Constants {
         return File.createTempFile(UUID.randomUUID().toString(), ".jpg", dir);
     }
 
+    static File getCameraVideoLocation(@NonNull Context context) throws IOException {
+        File dir = tempImageDirectory(context);
+        return File.createTempFile(UUID.randomUUID().toString(), ".mp4", dir);
+    }
+
     /**
      * To find out the extension of required object in given uri
      * Solution by http://stackoverflow.com/a/36514823/1171484
