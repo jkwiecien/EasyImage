@@ -10,14 +10,13 @@ publishing {
             setGroupId(groupId)
             setArtifactId(artifactId)
             version version_name
-            artifact(bundleRelease)
+            artifact(bundleReleaseAar)
         }
     }
 }
 
 android {
     compileSdkVersion compile_sdk_version
-    buildToolsVersion build_tools_version
 
     defaultConfig {
         minSdkVersion min_sdk_version
@@ -35,6 +34,6 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$support_library_version"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
 }
 
