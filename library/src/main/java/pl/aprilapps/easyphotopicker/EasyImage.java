@@ -13,16 +13,16 @@ import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import static pl.aprilapps.easyphotopicker.EasyImageFiles.singleFileList;
 
@@ -307,7 +307,7 @@ public class EasyImage implements Constants {
     }
 
     @Nullable
-    private static File takenCameraPicture(Context context) throws IOException, URISyntaxException {
+    private static File takenCameraPicture(Context context) {
         String lastCameraPhoto = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_PHOTO, null);
         if (lastCameraPhoto != null) {
             return new File(lastCameraPhoto);
@@ -317,7 +317,7 @@ public class EasyImage implements Constants {
     }
 
     @Nullable
-    private static File takenCameraVideo(Context context) throws IOException, URISyntaxException {
+    private static File takenCameraVideo(Context context) {
         String lastCameraPhoto = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_LAST_CAMERA_VIDEO, null);
         if (lastCameraPhoto != null) {
             return new File(lastCameraPhoto);
@@ -366,10 +366,7 @@ public class EasyImage implements Constants {
     }
 
     public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RequestCodes.SOURCE_CHOOSER || requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY || requestCode == RequestCodes.TAKE_PICTURE || requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
-            return true;
-        }
-        return false;
+        return requestCode == RequestCodes.SOURCE_CHOOSER || requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY || requestCode == RequestCodes.TAKE_PICTURE || requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS;
     }
 
     private static Intent plainGalleryPickerIntent() {

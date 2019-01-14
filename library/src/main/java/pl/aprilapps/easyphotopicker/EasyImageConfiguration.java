@@ -3,8 +3,6 @@ package pl.aprilapps.easyphotopicker;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-import java.io.File;
-
 /**
  * Created by Jacek Kwiecień on 22.12.2016.
  */
