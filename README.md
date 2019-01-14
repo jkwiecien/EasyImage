@@ -29,7 +29,7 @@ Please keep in mind that support for SDK 14 & 15 ended on version 1.3.1. If you 
 
 ```
 dependencies {
-    compile 'com.github.jkwiecien:EasyImage:1.3.1'
+    implementation 'com.github.jkwiecien:EasyImage:1.3.1'
 }
 ```
 
