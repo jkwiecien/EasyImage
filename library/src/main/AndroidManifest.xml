@@ -11,7 +11,7 @@
             >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"
+                android:resource="@xml/easyimage_filepaths"
                 />
         </provider>
     </application>
