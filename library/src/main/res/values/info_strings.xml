@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="define_MAwadiEasyImage"></string>
+  <string name="library_MAwadiEasyImage_author">Mohamed El-Awadi</string>
+  <string name="library_MAwadiEasyImage_authorWebsite"></string>
+  <string name="library_MAwadiEasyImage_libraryName">EasyImage</string>
+  <string name="library_MAwadiEasyImage_libraryDescription">Library for picking pictures from gallery or camera</string>
+  <string name="library_MAwadiEasyImage_libraryVersion">2.1.1</string>
+  <string name="library_MAwadiEasyImage_libraryWebsite">https://github.com/m-awadi/EasyImage</string>
+  <string name="library_MAwadiEasyImage_licenseId">mit</string>
+  <string name="library_MAwadiEasyImage_isOpenSource">true</string>
+  <string name="library_MAwadiEasyImage_repositoryLink">https://github.com/m-awadi/EasyImage</string>
+</resources>
