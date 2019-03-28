@@ -362,7 +362,11 @@ public class EasyImage implements Constants {
     }
 
     private static boolean isPhoto(Intent data) {
-        return data == null || (data.getData() == null && data.getClipData() == null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            return data == null || (data.getData() == null && data.getClipData() == null);
+        } else {
+            return data == null || (data.getData() == null);
+        }
     }
 
     public static boolean willHandleActivityResult(int requestCode, int resultCode, Intent data) {
@@ -420,8 +424,11 @@ public class EasyImage implements Constants {
 
     private static void onPictureReturnedFromGallery(Intent data, Activity activity, @NonNull Callbacks callbacks) {
         try {
-            ClipData clipData = data.getClipData();
             List<File> files = new ArrayList<>();
+            ClipData clipData = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                clipData = data.getClipData();
+            }
             if (clipData == null) {
                 Uri uri = data.getData();
                 File file = EasyImageFiles.pickedExistingPicture(activity, uri);
