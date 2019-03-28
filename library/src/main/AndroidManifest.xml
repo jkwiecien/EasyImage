@@ -1,18 +1,15 @@
 <manifest package="pl.aprilapps.easyphotopicker"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <provider
-            android:name=".ExtendedFileProvider"
+            android:name=".EasyImageFileProvider"
             android:authorities="${applicationId}.easyphotopicker.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/easyimage_filepaths"
-                />
+                android:resource="@xml/easyimage_filepaths" />
         </provider>
     </application>
 
