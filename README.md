@@ -36,7 +36,7 @@ dependencies {
 ## Essentials
 
 Create your EasyImageInstance like this:
-```
+```java
 EasyImage easyImage = new EasyImage.Builder(context)
 
 // Chooser only
