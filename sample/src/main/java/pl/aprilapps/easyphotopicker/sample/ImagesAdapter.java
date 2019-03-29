@@ -8,10 +8,10 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
+import pl.aprilapps.easyphotopicker.MediaFile;
 
 
 /**
@@ -21,9 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder> {
 
     private Context context;
-    private List<File> imagesFiles;
+    private List<MediaFile> imagesFiles;
 
-    public ImagesAdapter(Context context, List<File> imagesFiles) {
+    public ImagesAdapter(Context context, List<MediaFile> imagesFiles) {
         this.context = context;
         this.imagesFiles = imagesFiles;
     }
@@ -37,7 +37,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Picasso.get()
-                .load(imagesFiles.get(position))
+                .load(imagesFiles.get(position).getFile())
                 .fit()
                 .centerCrop()
                 .into(holder.imageView);

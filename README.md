@@ -1,6 +1,6 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725) [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 # What is it?
-EasyImage allows you to easily capture images from the gallery, camera or documents without creating lots of boilerplate.
+EasyImage allows you to easily capture images and videos from the gallery, camera or documents without creating lots of boilerplate.
 
 # Setup
 
@@ -8,9 +8,10 @@ EasyImage allows you to easily capture images from the gallery, camera or docume
 This library requires specific runtime permissions. Declare it in your `AndroidMnifest.xml`:
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.CAMERA" />
 ```
 
-**Please note**: for devices running API 23 (marshmallow) you have to request this permission in the runtime, before calling `EasyImage.openCamera()`. It's demonstrated in the sample app.
+**Please note**: for devices running API 23 (marshmallow) you have to request this permissions in the runtime, before calling `EasyImage.openCamera()`. It's demonstrated in the sample app.
 
 **There is also one issue about runtime permissions**. According to the docs: 
 
@@ -18,14 +19,12 @@ This library requires specific runtime permissions. Declare it in your `AndroidM
 
 For this reason, if your app uses `CAMERA` permission, you should check it along **with** `WRITE_EXTERNAL_STORAGE` before calling `EasyImage.openCamera()`
 
-[This library](https://github.com/tajchert/Nammu) will help you manage runtime permissions.
-
 ## Gradle dependency
 Get the latest version from jitpack
 
 [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 
-Please keep in mind that support for SDK 14 & 15 ended on version 1.3.1. If you have to support one of those, use that version of the library:
+Please keep in mind that support for SDK 14 ended on version 1.3.1. If you have to support one of those, use that version of the library:
 
 ```
 dependencies {
@@ -35,72 +34,77 @@ dependencies {
 
 # Usage
 ## Essentials
+
+Create your EasyImageInstance like this:
+```
+EasyImage easyImage = new EasyImage.Builder(context)
+
+// Chooser only
+// Will appear as a system chooser title, DEFAULT empty string
+//.setChooserTitle("Pick media")
+// Will tell chooser that it should show documents or gallery apps
+//.setChooserType(ChooserType.CAMERA_AND_DOCUMENTS)  you can use this or the one below
+//.setChooserType(ChooserType.CAMERA_AND_GALLERY)
+
+// Setting to true will cause taken pictures to show up in the device gallery, DEFAULT false
+.setCopyImagesToPublicGalleryFolder(false)
+// Sets the name for images stored if setCopyImagesToPublicGalleryFolder = true
+.setFolderName("EasyImage sample")
+
+// Allow multiple picking
+.allowMultiple(true)
+.build();
+```
+
 ### Taking image straight from camera
-- `EasyImage.openCamera(Activity activity, int type);`
-- `EasyImage.openCamera(Fragment fragment, int type);`
+- `easyImage.openCameraForImage(Activity activity,);`
+- `easyImage.openCameraForImage(Fragment fragment);`
+
+### Capturing video
+- `easyImage.openCameraForVideo(Activity activity);`
+- `easyImage.openCameraForVideo(Fragment fragment);`
 
 ### Taking image from gallery or the gallery picker if there is more than 1 gallery app
-- `EasyImage.openGallery(Activity activity, int typee);`
-- `EasyImage.openGallery(Fragment fragment, int type);`
+- `easyImage.openGallery(Activity activity);`
+- `easyImage.openGallery(Fragment fragment);`
 
 ### Taking image from documents
-- `EasyImage.openDocuments(Activity activity, int type);`
-- `EasyImage.openDocuments(Fragment fragment, int type);`
+- `easyImage.openDocuments(Activity activity);`
+- `easyImage.openDocuments(Fragment fragment);`
 
 ### Displaying system picker to chose from camera, documents, or gallery if no documents apps are available
-- `EasyImage.openChooserWithDocuments(Activity activity, String chooserTitle, int type);`
-- `EasyImage.openChooserWithDocuments(Fragment fragment, String chooserTitle, int type);`
-
-### Displaying system picker to chose from camera or gallery app
-- `EasyImage.openChooserWithGallery(Activity activity, String chooserTitle, int type);`
-- `EasyImage.openChooserWithGallery(Fragment fragment, String chooserTitle, int type);`
-
-The `type` parameter is there only if you want to return different kind of images on the same screen. Otherwise, pass any `int` like `0`.
+- `easyImage.openChooser(Activity activity);`
+- `easyImage.openChooser(Fragment fragment);`
 
 ### Getting the photo file
 
 ```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
-        @Override
-        public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-            //Some error handling
-        }
+        easyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
+                onPhotosReturned(imageFiles);
+            }
 
-        @Override
-        public void onImagesPicked(List<File> imagesFiles, EasyImage.ImageSource source, int type) {
-            //Handle the images
-            onPhotosReturned(imagesFiles);
-        }
-    });
-}
+            @Override
+            public void onImagePickerError(@NonNull Throwable error, @NonNull MediaSource source) {
+                //Some error handling
+                error.printStackTrace();
+            }
+
+            @Override
+            public void onCanceled(@NonNull MediaSource source) {
+                //Not necessary to remove any files manually anymore
+            }
+        });
+    }
 ```
-## Additional features
-### Removing canceled but captured photo
-If the user takes photo using camera, but then cancels, you might wanna remove that photo from the device.
-Sample app present's the usage:
-```java
-  @Override
-  public void onCanceled(EasyImage.ImageSource source, int type) {
-      // Cancel handling, you might wanna remove taken photo if it was canceled
-      if (source == EasyImage.ImageSource.CAMERA) {
-          File photoFile = EasyImage.lastlyTakenButCanceledPhoto(MainActivity.this);
-          if (photoFile != null) photoFile.delete();
-      }
-  }
-  ```
-## Additional configuration
-```java
-  EasyImage.configuration(this)
-          .setImagesFolderName("My app images") // images folder name, default is "EasyImage"
-          .saveInAppExternalFilesDir() // if you want to use root internal memory for storying images
-          .saveInRootPicturesDirectory(); // if you want to use internal memory for storying images - default
-	  .setAllowMultiplePickInGallery(true) // allows multiple picking in galleries that handle it. Also only for phones with API 18+ but it won't crash lower APIs. False by default
-```
-Configuration is persisted by default, so if you wish to clear it before the next use call `EasyImage.clearConfiguration(Context context);`
+
+# Known issues
+Library was pretty much rewritten from scratch in kotlin on 29.03.2019. Initial version 3.0.0 might be unstable. In case of problems fallback to version 2.1.1
+Also version 3.0.0 is not backward compatible and will require some changes of those who used previous versions. These are not big tho. Updated readme explains it all.
 
 # License
 
