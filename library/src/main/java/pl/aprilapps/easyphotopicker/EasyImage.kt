@@ -36,6 +36,7 @@ class EasyImage private constructor(
     }
 
     private fun startChooser(caller: Any) {
+        cleanup()
         getCallerActivity(caller)?.let { activity ->
             try {
                 lastCameraFile = Files.createCameraPictureFile(context)
@@ -54,6 +55,7 @@ class EasyImage private constructor(
     }
 
     private fun startDocuments(caller: Any) {
+        cleanup()
         getCallerActivity(caller)?.let { activity ->
             val intent = Intents.createDocumentsIntent()
             activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
@@ -61,6 +63,7 @@ class EasyImage private constructor(
     }
 
     private fun startGallery(caller: Any) {
+        cleanup()
         getCallerActivity(caller)?.let { activity ->
             val intent = Intents.createGalleryIntent(allowMultiple)
             activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
@@ -68,6 +71,7 @@ class EasyImage private constructor(
     }
 
     private fun startCameraForImage(caller: Any) {
+        cleanup()
         getCallerActivity(caller)?.let { activity ->
             lastCameraFile = Files.createCameraPictureFile(context)
             val takePictureIntent = Intents.createCameraForImageIntent(activity, lastCameraFile!!.uri)
@@ -84,6 +88,7 @@ class EasyImage private constructor(
     }
 
     private fun startCameraForVideo(caller: Any) {
+        cleanup()
         getCallerActivity(caller)?.let { activity ->
             lastCameraFile = Files.createCameraVideoFile(context)
             val recordVideoIntent = Intents.createCameraForVideoIntent(activity, lastCameraFile!!.uri)
@@ -183,6 +188,7 @@ class EasyImage private constructor(
                 onPickedExistingPicturesFromLocalStorage(resultIntent, activity, callbacks)
             }
         } catch (error: Throwable) {
+            cleanup()
             error.printStackTrace()
             callbacks.onImagePickerError(error, MediaSource.GALLERY)
         }
