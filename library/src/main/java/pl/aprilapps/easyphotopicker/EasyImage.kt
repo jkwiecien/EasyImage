@@ -35,89 +35,74 @@ class EasyImage private constructor(
         else -> null
     }
 
-    private fun startChooser(caller: Any) {
-        cleanup()
-        getCallerActivity(caller)?.let { activity ->
-            try {
-                lastCameraFile = Files.createCameraPictureFile(context)
-                val intent = Intents.createChooserIntent(
-                        context = activity,
-                        chooserTitle = chooserTitle,
-                        chooserType = chooserType,
-                        cameraFileUri = lastCameraFile!!.uri,
-                        allowMultiple = allowMultiple)
-                activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_CHOOSER)
-            } catch (error: IOException) {
-                error.printStackTrace()
-                cleanup()
-            }
+    private fun activityForResult(caller: Any, intent: Intent, requestCode: Int) {
+        when (caller) {
+            is Activity -> caller.startActivityForResult(intent, requestCode)
+            is Fragment -> caller.startActivityForResult(intent, requestCode)
+            is android.app.Fragment -> caller.startActivityForResult(intent, requestCode)
         }
     }
 
-    private fun startDocuments(caller: Any) {
+    fun openChooser(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
-            val intent = Intents.createDocumentsIntent()
-            activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
-        }
-    }
-
-    private fun startGallery(caller: Any) {
-        cleanup()
-        getCallerActivity(caller)?.let { activity ->
-            val intent = Intents.createGalleryIntent(allowMultiple)
-            activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
-        }
-    }
-
-    private fun startCameraForImage(caller: Any) {
-        cleanup()
-        getCallerActivity(caller)?.let { activity ->
+        val activity = getCallerActivity(caller) ?: return
+        try {
             lastCameraFile = Files.createCameraPictureFile(context)
-            val takePictureIntent = Intents.createCameraForImageIntent(activity, lastCameraFile!!.uri)
-            val capableComponent = takePictureIntent.resolveActivity(context.packageManager)
-                    ?.also {
-                        activity.startActivityForResult(takePictureIntent, RequestCodes.TAKE_PICTURE)
-                    }
-
-            if (capableComponent == null) {
-                Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
-                cleanup()
-            }
+            val intent = Intents.createChooserIntent(
+                    context = activity,
+                    chooserTitle = chooserTitle,
+                    chooserType = chooserType,
+                    cameraFileUri = lastCameraFile!!.uri,
+                    allowMultiple = allowMultiple)
+            activityForResult(caller, intent, RequestCodes.PICK_PICTURE_FROM_CHOOSER)
+        } catch (error: IOException) {
+            error.printStackTrace()
+            cleanup()
         }
     }
 
-    private fun startCameraForVideo(caller: Any) {
+    fun openDocuments(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
-            lastCameraFile = Files.createCameraVideoFile(context)
-            val recordVideoIntent = Intents.createCameraForVideoIntent(activity, lastCameraFile!!.uri)
-            val capableComponent = recordVideoIntent.resolveActivity(context.packageManager)
-                    ?.also {
-                        activity.startActivityForResult(recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
-                    }
-            if (capableComponent == null) {
-                Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
-                cleanup()
-            }
+        val intent = Intents.createDocumentsIntent()
+        activityForResult(caller, intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
+    }
+
+    fun openGallery(caller: Any) {
+        cleanup()
+        val intent = Intents.createGalleryIntent(allowMultiple)
+        activityForResult(caller, intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+    }
+
+    fun openCameraForImage(caller: Any) {
+        cleanup()
+        val activity = getCallerActivity(caller) ?: return
+        lastCameraFile = Files.createCameraPictureFile(context)
+        val takePictureIntent = Intents.createCameraForImageIntent(activity, lastCameraFile!!.uri)
+        val capableComponent = takePictureIntent.resolveActivity(context.packageManager)
+                ?.also {
+                    activityForResult(caller, takePictureIntent, RequestCodes.TAKE_PICTURE)
+                }
+
+        if (capableComponent == null) {
+            Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
+            cleanup()
         }
     }
 
-    fun openChooser(activity: Activity) = startChooser(activity)
-    fun openChooser(fragment: Fragment) = startChooser(fragment)
-    fun openChooser(fragment: android.app.Fragment) = startChooser(fragment)
-    fun openDocuments(activity: Activity) = startDocuments(activity)
-    fun openDocuments(fragment: Fragment) = startDocuments(fragment)
-    fun openDocuments(fragment: android.app.Fragment) = startDocuments(fragment)
-    fun openGallery(activity: Activity) = startGallery(activity)
-    fun openGallery(fragment: Fragment) = startGallery(fragment)
-    fun openGallery(fragment: android.app.Fragment) = startGallery(fragment)
-    fun openCameraForImage(activity: Activity) = startCameraForImage(activity)
-    fun openCameraForImage(fragment: Fragment) = startCameraForImage(fragment)
-    fun openCameraForImage(fragment: android.app.Fragment) = startCameraForImage(fragment)
-    fun openCameraForVideo(activity: Activity) = startCameraForVideo(activity)
-    fun openCameraForVideo(fragment: Fragment) = startCameraForVideo(fragment)
-    fun openCameraForVideo(fragment: android.app.Fragment) = startCameraForVideo(fragment)
+    fun openCameraForVideo(caller: Any) {
+        cleanup()
+        val activity = getCallerActivity(caller) ?: return
+        lastCameraFile = Files.createCameraVideoFile(context)
+        val recordVideoIntent = Intents.createCameraForVideoIntent(activity, lastCameraFile!!.uri)
+        val capableComponent = recordVideoIntent.resolveActivity(context.packageManager)
+                ?.also {
+                    activityForResult(caller, recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
+                }
+        if (capableComponent == null) {
+            Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
+            cleanup()
+        }
+    }
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         // EasyImage request codes are set to be between 374961 and 374965.
