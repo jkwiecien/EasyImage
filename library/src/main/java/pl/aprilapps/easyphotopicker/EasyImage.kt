@@ -28,25 +28,41 @@ class EasyImage private constructor(
         fun onCanceled(source: MediaSource)
     }
 
-    private fun getCallerActivity(caller: Any): Activity? = when (caller) {
-        is Activity -> caller
-        is Fragment -> caller.activity
-        is android.app.Fragment -> caller.activity
+    private class ActivityCaller(
+            val fragment: Fragment? = null,
+            val activity: Activity? = null,
+            val deprecatedFragment: android.app.Fragment? = null
+    ) {
+        val context: Context
+            get() = (activity ?: fragment?.activity ?: deprecatedFragment?.activity)!!
+
+        fun startActivityForResult(intent: Intent, chooser: Int) {
+            activity?.startActivityForResult(intent, chooser)
+                    ?: fragment?.startActivityForResult(intent, chooser)
+                    ?: deprecatedFragment?.startActivityForResult(intent, chooser)
+        }
+    }
+
+    private fun getCallerActivity(caller: Any): ActivityCaller? = when (caller) {
+        is Activity -> ActivityCaller(activity = caller)
+        is Fragment -> ActivityCaller(fragment = caller)
+        is android.app.Fragment -> ActivityCaller(deprecatedFragment = caller)
         else -> null
     }
 
     private fun startChooser(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
+        getCallerActivity(caller)?.let { activityCaller ->
             try {
                 lastCameraFile = Files.createCameraPictureFile(context)
                 val intent = Intents.createChooserIntent(
-                        context = activity,
+                        context = activityCaller.context,
                         chooserTitle = chooserTitle,
                         chooserType = chooserType,
                         cameraFileUri = lastCameraFile!!.uri,
-                        allowMultiple = allowMultiple)
-                activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_CHOOSER)
+                        allowMultiple = allowMultiple
+                )
+                activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_CHOOSER)
             } catch (error: IOException) {
                 error.printStackTrace()
                 cleanup()
@@ -56,28 +72,28 @@ class EasyImage private constructor(
 
     private fun startDocuments(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
+        getCallerActivity(caller)?.let { activityCaller ->
             val intent = Intents.createDocumentsIntent()
-            activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
+            activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
         }
     }
 
     private fun startGallery(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
+        getCallerActivity(caller)?.let { activityCaller ->
             val intent = Intents.createGalleryIntent(allowMultiple)
-            activity.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+            activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
         }
     }
 
     private fun startCameraForImage(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
+        getCallerActivity(caller)?.let { activityCaller ->
             lastCameraFile = Files.createCameraPictureFile(context)
-            val takePictureIntent = Intents.createCameraForImageIntent(activity, lastCameraFile!!.uri)
+            val takePictureIntent = Intents.createCameraForImageIntent(activityCaller.context, lastCameraFile!!.uri)
             val capableComponent = takePictureIntent.resolveActivity(context.packageManager)
                     ?.also {
-                        activity.startActivityForResult(takePictureIntent, RequestCodes.TAKE_PICTURE)
+                        activityCaller.startActivityForResult(takePictureIntent, RequestCodes.TAKE_PICTURE)
                     }
 
             if (capableComponent == null) {
@@ -89,12 +105,12 @@ class EasyImage private constructor(
 
     private fun startCameraForVideo(caller: Any) {
         cleanup()
-        getCallerActivity(caller)?.let { activity ->
+        getCallerActivity(caller)?.let { activityCaller ->
             lastCameraFile = Files.createCameraVideoFile(context)
-            val recordVideoIntent = Intents.createCameraForVideoIntent(activity, lastCameraFile!!.uri)
+            val recordVideoIntent = Intents.createCameraForVideoIntent(activityCaller.context, lastCameraFile!!.uri)
             val capableComponent = recordVideoIntent.resolveActivity(context.packageManager)
                     ?.also {
-                        activity.startActivityForResult(recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
+                        activityCaller.startActivityForResult(recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
                     }
             if (capableComponent == null) {
                 Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
