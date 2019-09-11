@@ -24,14 +24,6 @@ Get the latest version from jitpack
 
 [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
 
-Please keep in mind that support for SDK 14 ended on version 1.3.1. If you have to support one of those, use that version of the library:
-
-```
-dependencies {
-    implementation 'com.github.jkwiecien:EasyImage:1.3.1'
-}
-```
-
 # Usage
 ## Essentials
 
