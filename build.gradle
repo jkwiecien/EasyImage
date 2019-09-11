@@ -1,12 +1,12 @@
 buildscript {
 
     ext {
-        version_name = '3.0.1'
+        version_name = '3.0.3'
         kotlin_version = '1.3.50'
         compile_sdk_version = 28
         target_sdk_version = 28
         min_sdk_version = 15
-        version_code = 13
+        version_code = 15
     }
 
     repositories {
