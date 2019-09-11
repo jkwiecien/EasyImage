@@ -22,8 +22,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation(project(':library'))
 
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.github.tajchert:nammu:1.2.1'
 }
