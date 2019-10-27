@@ -27,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PHOTOS_KEY = "easy_image_photos_list";
     private static final int CHOOSER_PERMISSIONS_REQUEST_CODE = 7459;
-    private static final int CAMERA_REQUEST_CODE = 7500;
-    private static final int CAMERA_VIDEO_REQUEST_CODE = 7501;
     private static final int GALLERY_REQUEST_CODE = 7502;
     private static final int DOCUMENTS_REQUEST_CODE = 7503;
 
@@ -88,24 +86,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.camera_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] necessaryPermissions = new String[]{Manifest.permission.CAMERA};
-                if (arePermissionsGranted(necessaryPermissions)) {
-                    easyImage.openCameraForImage(MainActivity.this);
-                } else {
-                    requestPermissionsCompat(necessaryPermissions, CAMERA_REQUEST_CODE);
-                }
+                easyImage.openCameraForImage(MainActivity.this);
             }
         });
 
         findViewById(R.id.camera_video_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] necessaryPermissions = new String[]{Manifest.permission.CAMERA};
-                if (arePermissionsGranted(necessaryPermissions)) {
-                    easyImage.openCameraForVideo(MainActivity.this);
-                } else {
-                    requestPermissionsCompat(necessaryPermissions, CAMERA_VIDEO_REQUEST_CODE);
-                }
+                easyImage.openCameraForVideo(MainActivity.this);
             }
         });
 
@@ -125,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.chooser_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] necessaryPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                String[] necessaryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (arePermissionsGranted(necessaryPermissions)) {
                     easyImage.openChooser(MainActivity.this);
                 } else {
@@ -155,10 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == CHOOSER_PERMISSIONS_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             easyImage.openChooser(MainActivity.this);
-        } else if (requestCode == CAMERA_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            easyImage.openCameraForImage(MainActivity.this);
-        } else if (requestCode == CAMERA_VIDEO_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            easyImage.openCameraForVideo(MainActivity.this);
         } else if (requestCode == GALLERY_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             easyImage.openGallery(MainActivity.this);
         } else if (requestCode == DOCUMENTS_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
