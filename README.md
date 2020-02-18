@@ -37,6 +37,8 @@ EasyImage easyImage = new EasyImage.Builder(context)
 // Will tell chooser that it should show documents or gallery apps
 //.setChooserType(ChooserType.CAMERA_AND_DOCUMENTS)  you can use this or the one below
 //.setChooserType(ChooserType.CAMERA_AND_GALLERY)
+// saving EasyImage state (as for now: last camera file link)
+.setMemento(memento)
 
 // Setting to true will cause taken pictures to show up in the device gallery, DEFAULT false
 .setCopyImagesToPublicGalleryFolder(false)

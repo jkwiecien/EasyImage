@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import java.io.IOException
@@ -15,7 +16,8 @@ class EasyImage private constructor(
         private val folderName: String,
         private val allowMultiple: Boolean,
         private val chooserType: ChooserType,
-        private val copyImagesToPublicGalleryFolder: Boolean
+        private val copyImagesToPublicGalleryFolder: Boolean,
+        private val memento: Memento
 ) {
 
     private var lastCameraFile: MediaFile? = null
@@ -26,6 +28,16 @@ class EasyImage private constructor(
         fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource)
 
         fun onCanceled(source: MediaSource)
+    }
+
+    interface Memento {
+        fun restore(): Bundle
+        fun save(state: Bundle?)
+
+        companion object NOOP : Memento {
+            override fun restore() = Bundle()
+            override fun save(state: Bundle?) {}
+        }
     }
 
     private class ActivityCaller(
@@ -55,6 +67,7 @@ class EasyImage private constructor(
         getCallerActivity(caller)?.let { activityCaller ->
             try {
                 lastCameraFile = Files.createCameraPictureFile(context)
+                save()
                 val intent = Intents.createChooserIntent(
                         context = activityCaller.context,
                         chooserTitle = chooserTitle,
@@ -90,6 +103,7 @@ class EasyImage private constructor(
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
             lastCameraFile = Files.createCameraPictureFile(context)
+            save()
             val takePictureIntent = Intents.createCameraForImageIntent(activityCaller.context, lastCameraFile!!.uri)
             val capableComponent = takePictureIntent.resolveActivity(context.packageManager)
                     ?.also {
@@ -107,6 +121,7 @@ class EasyImage private constructor(
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
             lastCameraFile = Files.createCameraVideoFile(context)
+            save()
             val recordVideoIntent = Intents.createCameraForVideoIntent(activityCaller.context, lastCameraFile!!.uri)
             val capableComponent = recordVideoIntent.resolveActivity(context.packageManager)
                     ?.also {
@@ -138,6 +153,8 @@ class EasyImage private constructor(
     fun handleActivityResult(requestCode: Int, resultCode: Int, resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         // EasyImage request codes are set to be between 374961 and 374965.
         if (requestCode !in 34961..34965) return
+
+        restore()
 
         val mediaSource = when (requestCode) {
             RequestCodes.PICK_PICTURE_FROM_DOCUMENTS -> MediaSource.DOCUMENTS
@@ -263,6 +280,7 @@ class EasyImage private constructor(
             file.delete()
             Log.d(EASYIMAGE_LOG_TAG, "Clearing reference to camera file")
             lastCameraFile = null
+            save()
         }
     }
 
@@ -270,7 +288,26 @@ class EasyImage private constructor(
         lastCameraFile?.let { cameraFile ->
             Log.d(EASYIMAGE_LOG_TAG, "Clearing reference to camera file of size: ${cameraFile.file.length()}")
             lastCameraFile = null
+            save()
         }
+    }
+
+    private fun save(){
+        memento.save(
+            Bundle().apply{
+                putParcelable(KEY_LAST_CAMERA_FILE, lastCameraFile)
+            }
+        )
+    }
+
+    private fun restore(){
+        memento.restore().apply {
+            lastCameraFile = lastCameraFile ?: getParcelable(KEY_LAST_CAMERA_FILE) as MediaFile?
+        }
+    }
+
+    companion object {
+        private const val KEY_LAST_CAMERA_FILE = "last-camera-file-key"
     }
 
     class Builder(private val context: Context) {
@@ -289,6 +326,7 @@ class EasyImage private constructor(
         private var allowMultiple = false
         private var chooserType: ChooserType = ChooserType.CAMERA_AND_DOCUMENTS
         private var copyImagesToPublicGalleryFolder: Boolean = false
+        private var memento: Memento = Memento.NOOP
 
         fun setChooserTitle(chooserTitle: String): Builder {
             this.chooserTitle = chooserTitle
@@ -315,6 +353,11 @@ class EasyImage private constructor(
             return this
         }
 
+        fun setMemento(memento: Memento): Builder {
+            this.memento = memento
+            return this
+        }
+
         fun build(): EasyImage {
             return EasyImage(
                     context = context,
@@ -322,7 +365,8 @@ class EasyImage private constructor(
                     folderName = folderName,
                     chooserType = chooserType,
                     allowMultiple = allowMultiple,
-                    copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder
+                    copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder,
+                    memento = memento
             )
         }
     }

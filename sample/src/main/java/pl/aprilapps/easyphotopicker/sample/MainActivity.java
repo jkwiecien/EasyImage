@@ -23,9 +23,10 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import pl.aprilapps.easyphotopicker.MediaFile;
 import pl.aprilapps.easyphotopicker.MediaSource;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyImage.Memento {
 
     private static final String PHOTOS_KEY = "easy_image_photos_list";
+    private static final String STATE_KEY = "easy_image_state";
     private static final int CHOOSER_PERMISSIONS_REQUEST_CODE = 7459;
     private static final int CAMERA_REQUEST_CODE = 7500;
     private static final int CAMERA_VIDEO_REQUEST_CODE = 7501;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             photos = savedInstanceState.getParcelableArrayList(PHOTOS_KEY);
+            easyImageState = savedInstanceState.getParcelable(STATE_KEY);
         }
 
         imagesAdapter = new ImagesAdapter(this, photos);
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 .setChooserType(ChooserType.CAMERA_AND_GALLERY)
                 .setFolderName("EasyImage sample")
                 .allowMultiple(true)
+                .setMemento(this)
                 .build();
 
         checkGalleryAppAvailability();
@@ -136,10 +139,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private Bundle easyImageState = new Bundle();
+
+    @Override @NonNull
+    public Bundle restore() {
+        return easyImageState;
+    }
+
+    @Override
+    public void save(Bundle state) {
+        easyImageState = state;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(PHOTOS_KEY, photos);
+        outState.putParcelable(STATE_KEY, easyImageState);
     }
 
     private void checkGalleryAppAvailability() {
