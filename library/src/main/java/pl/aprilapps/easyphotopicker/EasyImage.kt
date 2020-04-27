@@ -245,7 +245,7 @@ class EasyImage private constructor(
 
     private fun onFileReturnedFromChooser(resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         Log.d(EASYIMAGE_LOG_TAG, "File returned from chooser")
-        if (resultIntent != null) {
+        if (resultIntent != null && resultIntent.data != null) {
             onPickedExistingPictures(resultIntent, activity, callbacks)
             removeCameraFileAndCleanup()
         } else if (lastCameraFile != null) {
