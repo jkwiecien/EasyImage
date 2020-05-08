@@ -58,7 +58,7 @@ object Files {
                 val filenameSplit = fileToCopy.name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 val extension = "." + filenameSplit[filenameSplit.size - 1]
                 val datePart = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Calendar.getInstance().time)
-                val filename = "IMG_${datePart}_$i.$extension%d.%s"
+                val filename = "IMG_${datePart}_$i$extension"
                 val dstFile = File(dstDir, filename)
                 try {
                     dstFile.createNewFile()
