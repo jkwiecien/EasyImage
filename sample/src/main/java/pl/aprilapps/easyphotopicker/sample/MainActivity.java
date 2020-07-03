@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,17 +43,28 @@ public class MainActivity extends AppCompatActivity {
 
     private EasyImage easyImage;
 
+    private Button goToCustomActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        goToCustomActivity = findViewById(R.id.goto_button);
         recyclerView = findViewById(R.id.recycler_view);
         galleryButton = findViewById(R.id.gallery_button);
 
         if (savedInstanceState != null) {
             photos = savedInstanceState.getParcelableArrayList(PHOTOS_KEY);
         }
+
+
+        goToCustomActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, CustomRequestCodeActivity.class));
+            }
+        });
 
         imagesAdapter = new ImagesAdapter(this, photos);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

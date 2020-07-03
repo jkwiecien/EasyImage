@@ -15,7 +15,8 @@ class EasyImage private constructor(
         private val folderName: String,
         private val allowMultiple: Boolean,
         private val chooserType: ChooserType,
-        private val copyImagesToPublicGalleryFolder: Boolean
+        private val copyImagesToPublicGalleryFolder: Boolean,
+        private val aRequestCode: Int? = null
 ) {
 
     private var lastCameraFile: MediaFile? = null
@@ -82,7 +83,11 @@ class EasyImage private constructor(
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
             val intent = Intents.createGalleryIntent(allowMultiple)
-            activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+            if(aRequestCode == null){
+                activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+            }else{
+                activityCaller.startActivityForResult(intent, aRequestCode)
+            }
         }
     }
 
@@ -93,7 +98,11 @@ class EasyImage private constructor(
             val takePictureIntent = Intents.createCameraForImageIntent(activityCaller.context, lastCameraFile!!.uri)
             val capableComponent = takePictureIntent.resolveActivity(context.packageManager)
                     ?.also {
-                        activityCaller.startActivityForResult(takePictureIntent, RequestCodes.TAKE_PICTURE)
+                        if(aRequestCode == null){
+                            activityCaller.startActivityForResult(takePictureIntent, RequestCodes.TAKE_PICTURE)
+                        }else{
+                            activityCaller.startActivityForResult(takePictureIntent, aRequestCode)
+                        }
                     }
 
             if (capableComponent == null) {
@@ -110,7 +119,11 @@ class EasyImage private constructor(
             val recordVideoIntent = Intents.createCameraForVideoIntent(activityCaller.context, lastCameraFile!!.uri)
             val capableComponent = recordVideoIntent.resolveActivity(context.packageManager)
                     ?.also {
-                        activityCaller.startActivityForResult(recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
+                        if(aRequestCode == null){
+                            activityCaller.startActivityForResult(recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
+                        }else{
+                            activityCaller.startActivityForResult(recordVideoIntent, aRequestCode)
+                        }
                     }
             if (capableComponent == null) {
                 Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
@@ -137,7 +150,8 @@ class EasyImage private constructor(
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         // EasyImage request codes are set to be between 374961 and 374965.
-        if (requestCode !in 34961..34965) return
+        // Disabled check request code due to custom request code
+//        if (requestCode !in 34961..34965) return
 
         val mediaSource = when (requestCode) {
             RequestCodes.PICK_PICTURE_FROM_DOCUMENTS -> MediaSource.DOCUMENTS
@@ -148,15 +162,15 @@ class EasyImage private constructor(
         }
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && resultIntent != null) {
+            if (requestCode == (aRequestCode ?: RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) && resultIntent != null) {
                 onPickedExistingPicturesFromLocalStorage(resultIntent, activity, callbacks)
-            } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && resultIntent != null) {
+            } else if (requestCode == (aRequestCode ?: RequestCodes.PICK_PICTURE_FROM_GALLERY) && resultIntent != null) {
                 onPickedExistingPictures(resultIntent, activity, callbacks)
-            } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_CHOOSER) {
+            } else if (requestCode == (aRequestCode ?: RequestCodes.PICK_PICTURE_FROM_CHOOSER)) {
                 onFileReturnedFromChooser(resultIntent, activity, callbacks)
-            } else if (requestCode == RequestCodes.TAKE_PICTURE) {
+            } else if (requestCode == (aRequestCode ?: RequestCodes.TAKE_PICTURE)) {
                 onPictureReturnedFromCamera(activity, callbacks)
-            } else if (requestCode == RequestCodes.CAPTURE_VIDEO) {
+            } else if (requestCode == (aRequestCode ?: RequestCodes.CAPTURE_VIDEO)) {
                 onVideoReturnedFromCamera(activity, callbacks)
             }
         } else {
@@ -290,6 +304,15 @@ class EasyImage private constructor(
         private var chooserType: ChooserType = ChooserType.CAMERA_AND_DOCUMENTS
         private var copyImagesToPublicGalleryFolder: Boolean = false
 
+        /*DEFAULT REQUEST CODE*/
+        private var requestCode : Int? = null
+
+        fun setRequestCode(requestCode: Int) : Builder {
+            this.requestCode = requestCode
+            return this
+        }
+
+
         fun setChooserTitle(chooserTitle: String): Builder {
             this.chooserTitle = chooserTitle
             return this
@@ -322,7 +345,8 @@ class EasyImage private constructor(
                     folderName = folderName,
                     chooserType = chooserType,
                     allowMultiple = allowMultiple,
-                    copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder
+                    copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder,
+                    aRequestCode = requestCode
             )
         }
     }
