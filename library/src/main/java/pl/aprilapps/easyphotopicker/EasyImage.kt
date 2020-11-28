@@ -73,7 +73,7 @@ class EasyImage private constructor(
     private fun startDocuments(caller: Any) {
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
-            val intent = Intents.createDocumentsIntent()
+            val intent = Intents.createDocumentsIntent(allowMultiple)
             activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
         }
     }
