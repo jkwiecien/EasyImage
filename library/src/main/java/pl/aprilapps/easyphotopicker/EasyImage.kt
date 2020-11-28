@@ -149,7 +149,7 @@ class EasyImage private constructor(
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && resultIntent != null) {
-                onPickedExistingPicturesFromLocalStorage(resultIntent, activity, callbacks)
+                onPickedExistingPictures(resultIntent, activity, callbacks)
             } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && resultIntent != null) {
                 onPickedExistingPictures(resultIntent, activity, callbacks)
             } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_CHOOSER) {
