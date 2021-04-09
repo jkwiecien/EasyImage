@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
 
         if (savedInstanceState != null) {
             photos = savedInstanceState.getParcelableArrayList(PHOTOS_KEY);
-             = savedInstanceState.getParcelable(STATE_KEY);
+            easyImageState = savedInstanceState.getParcelable(STATE_KEY);
         }
 
         imagesAdapter = new ImagesAdapter(this, photos);
@@ -141,7 +141,8 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
 
     private Bundle easyImageState = new Bundle();
 
-    @Override @NonNull
+    @Override
+    @NonNull
     public Bundle restoreEasyImageState() {
         return easyImageState;
     }
