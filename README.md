@@ -5,7 +5,7 @@ EasyImage allows you to easily capture images and videos from the gallery, camer
 # Setup
 
 ## Runtime permissions
-This library requires specific runtime permissions. Declare it in your `AndroidMnifest.xml`:
+This library requires specific runtime permissions. Declare it in your `AndroidManifest.xml`:
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.CAMERA" />
