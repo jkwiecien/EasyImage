@@ -35,6 +35,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    
+    kotlinOptions {
+        kotlinOptions.freeCompilerArgs += ['-module-name', "$groupId.$artifactId"]
+    }
 }
 
 dependencies {
