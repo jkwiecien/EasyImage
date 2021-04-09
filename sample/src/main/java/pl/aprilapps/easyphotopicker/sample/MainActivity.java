@@ -23,7 +23,7 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 import pl.aprilapps.easyphotopicker.MediaFile;
 import pl.aprilapps.easyphotopicker.MediaSource;
 
-public class MainActivity extends AppCompatActivity implements EasyImage.Memento {
+public class MainActivity extends AppCompatActivity implements EasyImage.EasyImageStateHandler {
 
     private static final String PHOTOS_KEY = "easy_image_photos_list";
     private static final String STATE_KEY = "easy_image_state";
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements EasyImage.Memento
 
         if (savedInstanceState != null) {
             photos = savedInstanceState.getParcelableArrayList(PHOTOS_KEY);
-            easyImageState = savedInstanceState.getParcelable(STATE_KEY);
+             = savedInstanceState.getParcelable(STATE_KEY);
         }
 
         imagesAdapter = new ImagesAdapter(this, photos);
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements EasyImage.Memento
                 .setChooserType(ChooserType.CAMERA_AND_GALLERY)
                 .setFolderName("EasyImage sample")
                 .allowMultiple(true)
-                .setMemento(this)
+                .setStateHandler(this)
                 .build();
 
         checkGalleryAppAvailability();
@@ -142,12 +142,12 @@ public class MainActivity extends AppCompatActivity implements EasyImage.Memento
     private Bundle easyImageState = new Bundle();
 
     @Override @NonNull
-    public Bundle restore() {
+    public Bundle restoreEasyImageState() {
         return easyImageState;
     }
 
     @Override
-    public void save(Bundle state) {
+    public void saveEasyImageState(Bundle state) {
         easyImageState = state;
     }
 

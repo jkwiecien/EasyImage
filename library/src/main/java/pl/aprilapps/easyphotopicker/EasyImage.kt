@@ -17,7 +17,7 @@ class EasyImage private constructor(
         private val allowMultiple: Boolean,
         private val chooserType: ChooserType,
         private val copyImagesToPublicGalleryFolder: Boolean,
-        private val memento: Memento
+        private val easyImageStateHandler: EasyImageStateHandler
 ) {
 
     private var lastCameraFile: MediaFile? = null
@@ -30,13 +30,13 @@ class EasyImage private constructor(
         fun onCanceled(source: MediaSource)
     }
 
-    interface Memento {
-        fun restore(): Bundle
-        fun save(state: Bundle?)
+    interface EasyImageStateHandler {
+        fun restoreEasyImageState(): Bundle
+        fun saveEasyImageState(state: Bundle?)
 
-        companion object NOOP : Memento {
-            override fun restore() = Bundle()
-            override fun save(state: Bundle?) {}
+        companion object DefaultStateHandler : EasyImageStateHandler {
+            override fun restoreEasyImageState() = Bundle()
+            override fun saveEasyImageState(state: Bundle?) {}
         }
     }
 
@@ -292,16 +292,16 @@ class EasyImage private constructor(
         }
     }
 
-    private fun save(){
-        memento.save(
-            Bundle().apply{
-                putParcelable(KEY_LAST_CAMERA_FILE, lastCameraFile)
-            }
+    private fun save() {
+        easyImageStateHandler.saveEasyImageState(
+                Bundle().apply {
+                    putParcelable(KEY_LAST_CAMERA_FILE, lastCameraFile)
+                }
         )
     }
 
-    private fun restore(){
-        memento.restore().apply {
+    private fun restore() {
+        easyImageStateHandler.restoreEasyImageState().apply {
             lastCameraFile = lastCameraFile ?: getParcelable(KEY_LAST_CAMERA_FILE) as MediaFile?
         }
     }
@@ -326,7 +326,7 @@ class EasyImage private constructor(
         private var allowMultiple = false
         private var chooserType: ChooserType = ChooserType.CAMERA_AND_DOCUMENTS
         private var copyImagesToPublicGalleryFolder: Boolean = false
-        private var memento: Memento = Memento.NOOP
+        private var easyImageStateHandler: EasyImageStateHandler = EasyImageStateHandler.DefaultStateHandler
 
         fun setChooserTitle(chooserTitle: String): Builder {
             this.chooserTitle = chooserTitle
@@ -353,8 +353,8 @@ class EasyImage private constructor(
             return this
         }
 
-        fun setMemento(memento: Memento): Builder {
-            this.memento = memento
+        fun setStateHandler(easyImageStateHandler: EasyImageStateHandler): Builder {
+            this.easyImageStateHandler = easyImageStateHandler
             return this
         }
 
@@ -366,7 +366,7 @@ class EasyImage private constructor(
                     chooserType = chooserType,
                     allowMultiple = allowMultiple,
                     copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder,
-                    memento = memento
+                    easyImageStateHandler = easyImageStateHandler
             )
         }
     }
