@@ -86,7 +86,7 @@ class EasyImage private constructor(
     private fun startDocuments(caller: Any) {
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
-            val intent = Intents.createDocumentsIntent()
+            val intent = Intents.createDocumentsIntent(allowMultiple)
             activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
         }
     }
@@ -166,7 +166,7 @@ class EasyImage private constructor(
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && resultIntent != null) {
-                onPickedExistingPicturesFromLocalStorage(resultIntent, activity, callbacks)
+                onPickedExistingPictures(resultIntent, activity, callbacks)
             } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && resultIntent != null) {
                 onPickedExistingPictures(resultIntent, activity, callbacks)
             } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_CHOOSER) {
@@ -262,7 +262,8 @@ class EasyImage private constructor(
 
     private fun onFileReturnedFromChooser(resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         Log.d(EASYIMAGE_LOG_TAG, "File returned from chooser")
-        if (resultIntent != null && !Intents.isTherePhotoTakenWithCameraInsideIntent(resultIntent) && resultIntent.data != null) {
+        if (resultIntent != null && !Intents.isTherePhotoTakenWithCameraInsideIntent(resultIntent)
+                && (resultIntent.data != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && resultIntent.clipData != null )) {
             onPickedExistingPictures(resultIntent, activity, callbacks)
             removeCameraFileAndCleanup()
         } else if (lastCameraFile != null) {

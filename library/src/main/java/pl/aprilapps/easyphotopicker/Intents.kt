@@ -29,8 +29,9 @@ internal object Intents {
         return Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
     }
 
-    internal fun createDocumentsIntent(): Intent {
+    internal fun createDocumentsIntent(allowMultiple: Boolean): Intent {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple)
         intent.type = "image/*"
         return intent
     }
@@ -86,7 +87,7 @@ internal object Intents {
 
         val storageIntent = when (chooserType) {
             ChooserType.CAMERA_AND_GALLERY -> createGalleryIntent(allowMultiple)
-            else -> createDocumentsIntent()
+            else -> createDocumentsIntent(allowMultiple)
         }
 
         val chooserIntent = Intent.createChooser(storageIntent, chooserTitle)
