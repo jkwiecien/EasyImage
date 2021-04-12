@@ -5,13 +5,18 @@ EasyImage allows you to easily capture images and videos from the gallery, camer
 # Setup
 
 ## Runtime permissions
-This library requires specific runtime permissions. Declare it in your `AndroidManifest.xml`:
+No additional permisions are required if you DO NOT `use setCopyImagesToPublicGalleryFolder()` setting. But if you do:
+
+### For devices running Android 10 and newer:
+Nothing is required
+
+### For devices running Android 9 or lower:
+Permission need to be specified in Manifest:
 ```xml
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.CAMERA" />
 ```
 
-**Please note**: for devices running API 23 (marshmallow) you have to request this permissions in the runtime, before calling `EasyImage.openCamera()`. It's demonstrated in the sample app.
+Also you'll need to ask for this permission in the runtime in the moment of your choice. Sample app does that.
 
 **There is also one issue about runtime permissions**. According to the docs: 
 

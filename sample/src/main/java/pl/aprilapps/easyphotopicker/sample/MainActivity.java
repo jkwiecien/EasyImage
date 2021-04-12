@@ -1,7 +1,9 @@
 package pl.aprilapps.easyphotopicker.sample;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
     private static final int CHOOSER_PERMISSIONS_REQUEST_CODE = 7459;
     private static final int GALLERY_REQUEST_CODE = 7502;
     private static final int DOCUMENTS_REQUEST_CODE = 7503;
+    private static final int LEGACY_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 456;
 
     protected RecyclerView recyclerView;
 
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
     private ArrayList<MediaFile> photos = new ArrayList<>();
 
     private EasyImage easyImage;
+
+    private static final String[] LEGACY_WRITE_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
 
         easyImage = new EasyImage.Builder(this)
                 .setChooserTitle("Pick media")
-                .setCopyImagesToPublicGalleryFolder(false)
+                .setCopyImagesToPublicGalleryFolder(true) // THIS requires granting WRITE_EXTERNAL_STORAGE permission for devices running Android 9 or lower
 //                .setChooserType(ChooserType.CAMERA_AND_DOCUMENTS)
                 .setChooserType(ChooserType.CAMERA_AND_GALLERY)
                 .setFolderName("EasyImage sample")
@@ -74,7 +79,11 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
         findViewById(R.id.gallery_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                easyImage.openGallery(MainActivity.this);
+                if (isLegacyExternalStoragePermissionRequired()) {
+                    requestLegacyWriteExternalStoragePermission();
+                } else {
+                    easyImage.openGallery(MainActivity.this);
+                }
             }
         });
 
@@ -82,28 +91,44 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
         findViewById(R.id.camera_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                easyImage.openCameraForImage(MainActivity.this);
+                if (isLegacyExternalStoragePermissionRequired()) {
+                    requestLegacyWriteExternalStoragePermission();
+                } else {
+                    easyImage.openCameraForImage(MainActivity.this);
+                }
             }
         });
 
         findViewById(R.id.camera_video_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                easyImage.openCameraForVideo(MainActivity.this);
+                if (isLegacyExternalStoragePermissionRequired()) {
+                    requestLegacyWriteExternalStoragePermission();
+                } else {
+                    easyImage.openCameraForVideo(MainActivity.this);
+                }
             }
         });
 
         findViewById(R.id.documents_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                easyImage.openDocuments(MainActivity.this);
+                if (isLegacyExternalStoragePermissionRequired()) {
+                    requestLegacyWriteExternalStoragePermission();
+                } else {
+                    easyImage.openDocuments(MainActivity.this);
+                }
             }
         });
 
         findViewById(R.id.chooser_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                easyImage.openChooser(MainActivity.this);
+                if (isLegacyExternalStoragePermissionRequired()) {
+                    requestLegacyWriteExternalStoragePermission();
+                } else {
+                    easyImage.openChooser(MainActivity.this);
+                }
             }
         });
 
@@ -181,16 +206,12 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
         recyclerView.scrollToPosition(photos.size() - 1);
     }
 
-    private boolean arePermissionsGranted(String[] permissions) {
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED)
-                return false;
-
-        }
-        return true;
+    private boolean isLegacyExternalStoragePermissionRequired() {
+        boolean permissionGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        return Build.VERSION.SDK_INT < 29 && !permissionGranted;
     }
 
-    private void requestPermissionsCompat(String[] permissions, int requestCode) {
-        ActivityCompat.requestPermissions(MainActivity.this, permissions, requestCode);
+    private void requestLegacyWriteExternalStoragePermission() {
+        ActivityCompat.requestPermissions(MainActivity.this, LEGACY_WRITE_PERMISSIONS, LEGACY_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
     }
 }

@@ -234,7 +234,7 @@ class EasyImage private constructor(
             try {
                 if (cameraFile.uri.toString().isEmpty()) Intents.revokeWritePermission(activity, cameraFile.uri)
                 val files = mutableListOf(cameraFile)
-                if (copyImagesToPublicGalleryFolder) Files.copyFilesInSeparateThread(activity, folderName, files.map { it.file })
+                if (copyImagesToPublicGalleryFolder) Files.copyImagesToPublicGallery(activity, folderName, files.map { it.file })
                 callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.CAMERA_IMAGE)
             } catch (error: Throwable) {
                 error.printStackTrace()
@@ -250,7 +250,8 @@ class EasyImage private constructor(
             try {
                 if (cameraFile.uri.toString().isEmpty()) Intents.revokeWritePermission(activity, cameraFile.uri)
                 val files = mutableListOf(cameraFile)
-                if (copyImagesToPublicGalleryFolder) Files.copyFilesInSeparateThread(activity, folderName, files.map { it.file })
+//                if (copyImagesToPublicGalleryFolder) Files.copyFilesInSeparateThread(activity, folderName, files.map { it.file })
+                //FIXME
                 callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.CAMERA_VIDEO)
             } catch (error: Throwable) {
                 error.printStackTrace()
@@ -263,7 +264,7 @@ class EasyImage private constructor(
     private fun onFileReturnedFromChooser(resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         Log.d(EASYIMAGE_LOG_TAG, "File returned from chooser")
         if (resultIntent != null && !Intents.isTherePhotoTakenWithCameraInsideIntent(resultIntent)
-                && (resultIntent.data != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && resultIntent.clipData != null )) {
+                && (resultIntent.data != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && resultIntent.clipData != null)) {
             onPickedExistingPictures(resultIntent, activity, callbacks)
             removeCameraFileAndCleanup()
         } else if (lastCameraFile != null) {
