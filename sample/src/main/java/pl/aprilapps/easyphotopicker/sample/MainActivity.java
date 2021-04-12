@@ -1,6 +1,5 @@
 package pl.aprilapps.easyphotopicker.sample;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -75,13 +74,7 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
         findViewById(R.id.gallery_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-                String[] necessaryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                if (arePermissionsGranted(necessaryPermissions)) {
-                    easyImage.openGallery(MainActivity.this);
-                } else {
-                    requestPermissionsCompat(necessaryPermissions, GALLERY_REQUEST_CODE);
-                }
+                easyImage.openGallery(MainActivity.this);
             }
         });
 
@@ -103,25 +96,14 @@ public class MainActivity extends AppCompatActivity implements EasyImage.EasyIma
         findViewById(R.id.documents_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
-                String[] necessaryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                if (arePermissionsGranted(necessaryPermissions)) {
-                    easyImage.openDocuments(MainActivity.this);
-                } else {
-                    requestPermissionsCompat(necessaryPermissions, DOCUMENTS_REQUEST_CODE);
-                }
+                easyImage.openDocuments(MainActivity.this);
             }
         });
 
         findViewById(R.id.chooser_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] necessaryPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                if (arePermissionsGranted(necessaryPermissions)) {
-                    easyImage.openChooser(MainActivity.this);
-                } else {
-                    requestPermissionsCompat(necessaryPermissions, CHOOSER_PERMISSIONS_REQUEST_CODE);
-                }
+                easyImage.openChooser(MainActivity.this);
             }
         });
 
