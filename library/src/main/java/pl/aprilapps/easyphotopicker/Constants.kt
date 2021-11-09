@@ -17,4 +17,7 @@ internal object RequestCodes {
     const val PICK_PICTURE_FROM_CHOOSER = 34963
     const val TAKE_PICTURE = 34964
     const val CAPTURE_VIDEO = 34965
+    const val PICK_VIDEO_FROM_DOCUMENTS = 34966
+    const val PICK_VIDEO_FROM_GALLERY = 34967
+    const val PICK_VIDEO_FROM_CHOOSER = 34968
 }
