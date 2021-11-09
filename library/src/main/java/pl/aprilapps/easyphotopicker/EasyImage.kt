@@ -83,6 +83,27 @@ class EasyImage private constructor(
         }
     }
 
+    private fun startVideoChooser(caller: Any) {
+        cleanup()
+        getCallerActivity(caller)?.let { activityCaller ->
+            try {
+                lastCameraFile = Files.createCameraVideoFile(context)
+                save()
+                val intent = Intents.createVideoChooserIntent(
+                        context = activityCaller.context,
+                        chooserTitle = chooserTitle,
+                        chooserType = chooserType,
+                        cameraFileUri = lastCameraFile!!.uri,
+                        allowMultiple = allowMultiple
+                )
+                activityCaller.startActivityForResult(intent, RequestCodes.PICK_VIDEO_FROM_CHOOSER)
+            } catch (error: IOException) {
+                error.printStackTrace()
+                cleanup()
+            }
+        }
+    }
+
     private fun startDocuments(caller: Any) {
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
@@ -91,11 +112,27 @@ class EasyImage private constructor(
         }
     }
 
+    private fun startVideoDocuments(caller: Any) {
+        cleanup()
+        getCallerActivity(caller)?.let { activityCaller ->
+            val intent = Intents.createVideoDocumentsIntent(allowMultiple)
+            activityCaller.startActivityForResult(intent, RequestCodes.PICK_VIDEO_FROM_DOCUMENTS)
+        }
+    }
+
     private fun startGallery(caller: Any) {
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
             val intent = Intents.createGalleryIntent(allowMultiple)
             activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+        }
+    }
+
+    private fun startVideoGallery(caller: Any) {
+        cleanup()
+        getCallerActivity(caller)?.let { activityCaller ->
+            val intent = Intents.createVideoGalleryIntent(allowMultiple)
+            activityCaller.startActivityForResult(intent, RequestCodes.PICK_VIDEO_FROM_GALLERY)
         }
     }
 
@@ -137,12 +174,21 @@ class EasyImage private constructor(
     fun openChooser(activity: Activity) = startChooser(activity)
     fun openChooser(fragment: Fragment) = startChooser(fragment)
     fun openChooser(fragment: android.app.Fragment) = startChooser(fragment)
+    fun openVideoChooser(activity: Activity) = startVideoChooser(activity)
+    fun openVideoChooser(fragment: Fragment) = startVideoChooser(fragment)
+    fun openVideoChooser(fragment: android.app.Fragment) = startVideoChooser(fragment)
     fun openDocuments(activity: Activity) = startDocuments(activity)
     fun openDocuments(fragment: Fragment) = startDocuments(fragment)
     fun openDocuments(fragment: android.app.Fragment) = startDocuments(fragment)
+    fun openVideoDocuments(activity: Activity) = startVideoDocuments(activity)
+    fun openVideoDocuments(fragment: Fragment) = startVideoDocuments(fragment)
+    fun openVideoDocuments(fragment: android.app.Fragment) = startVideoDocuments(fragment)
     fun openGallery(activity: Activity) = startGallery(activity)
     fun openGallery(fragment: Fragment) = startGallery(fragment)
     fun openGallery(fragment: android.app.Fragment) = startGallery(fragment)
+    fun openVideoGallery(activity: Activity) = startVideoGallery(activity)
+    fun openVideoGallery(fragment: Fragment) = startVideoGallery(fragment)
+    fun openVideoGallery(fragment: android.app.Fragment) = startVideoGallery(fragment)
     fun openCameraForImage(activity: Activity) = startCameraForImage(activity)
     fun openCameraForImage(fragment: Fragment) = startCameraForImage(fragment)
     fun openCameraForImage(fragment: android.app.Fragment) = startCameraForImage(fragment)
@@ -152,13 +198,13 @@ class EasyImage private constructor(
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
         // EasyImage request codes are set to be between 374961 and 374965.
-        if (requestCode !in 34961..34965) return
+        if (requestCode !in 34961..34968) return
 
         restore()
 
         val mediaSource = when (requestCode) {
-            RequestCodes.PICK_PICTURE_FROM_DOCUMENTS -> MediaSource.DOCUMENTS
-            RequestCodes.PICK_PICTURE_FROM_GALLERY -> MediaSource.GALLERY
+            RequestCodes.PICK_PICTURE_FROM_DOCUMENTS, RequestCodes.PICK_VIDEO_FROM_DOCUMENTS -> MediaSource.DOCUMENTS
+            RequestCodes.PICK_PICTURE_FROM_GALLERY, RequestCodes.PICK_VIDEO_FROM_GALLERY -> MediaSource.GALLERY
             RequestCodes.TAKE_PICTURE -> MediaSource.CAMERA_IMAGE
             RequestCodes.CAPTURE_VIDEO -> MediaSource.CAMERA_VIDEO
             else -> MediaSource.CHOOSER
@@ -175,7 +221,13 @@ class EasyImage private constructor(
                 onPictureReturnedFromCamera(activity, callbacks)
             } else if (requestCode == RequestCodes.CAPTURE_VIDEO) {
                 onVideoReturnedFromCamera(activity, callbacks)
-            }
+            } else if (requestCode == RequestCodes.PICK_VIDEO_FROM_DOCUMENTS && resultIntent != null) {
+				onPickedExistingPictures(resultIntent, activity, callbacks)
+			} else if (requestCode == RequestCodes.PICK_VIDEO_FROM_GALLERY && resultIntent != null) {
+				onPickedExistingPictures(resultIntent, activity, callbacks)
+			} else if (requestCode == RequestCodes.PICK_VIDEO_FROM_CHOOSER) {
+				onFileReturnedFromChooser(resultIntent, activity, callbacks)
+			}
         } else {
             removeCameraFileAndCleanup()
             callbacks.onCanceled(mediaSource)
@@ -274,6 +326,10 @@ class EasyImage private constructor(
 
     fun canDeviceHandleGallery(): Boolean {
         return Intents.plainGalleryPickerIntent().resolveActivity(context.packageManager) != null
+    }
+
+    fun canDeviceHandleVideoGallery(): Boolean {
+        return Intents.plainVideoGalleryPickerIntent().resolveActivity(context.packageManager) != null
     }
 
     private fun removeCameraFileAndCleanup() {

@@ -29,6 +29,10 @@ internal object Intents {
         return Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
     }
 
+    internal fun plainVideoGalleryPickerIntent(): Intent {
+        return Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+    }
+
     internal fun createDocumentsIntent(allowMultiple: Boolean): Intent {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple)
@@ -36,8 +40,21 @@ internal object Intents {
         return intent
     }
 
+    internal fun createVideoDocumentsIntent(allowMultiple: Boolean): Intent {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple)
+        intent.type = "video/*"
+        return intent
+    }
+
     internal fun createGalleryIntent(allowMultiple: Boolean): Intent {
         val intent = plainGalleryPickerIntent()
+        if (Build.VERSION.SDK_INT >= 18) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple)
+        return intent
+    }
+
+    internal fun createVideoGalleryIntent(allowMultiple: Boolean): Intent {
+        val intent = plainVideoGalleryPickerIntent()
         if (Build.VERSION.SDK_INT >= 18) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple)
         return intent
     }
@@ -88,6 +105,36 @@ internal object Intents {
         val storageIntent = when (chooserType) {
             ChooserType.CAMERA_AND_GALLERY -> createGalleryIntent(allowMultiple)
             else -> createDocumentsIntent(allowMultiple)
+        }
+
+        val chooserIntent = Intent.createChooser(storageIntent, chooserTitle)
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toTypedArray<Parcelable>())
+
+        return chooserIntent
+    }
+
+    @Throws(IOException::class)
+    internal fun createVideoChooserIntent(context: Context, chooserTitle: String, chooserType: ChooserType, cameraFileUri: Uri, allowMultiple: Boolean): Intent {
+        val cameraIntents = ArrayList<Intent>()
+        val captureIntent = Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE)
+        val packageManager = context.packageManager
+        val camList = packageManager.queryIntentActivities(captureIntent, 0)
+        for (resolveInfo in camList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            val intent = Intent(captureIntent)
+            intent.component = ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name)
+            intent.setPackage(packageName)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri)
+
+            //We have to explicitly grant the write permission since Intent.setFlag works only on API Level >=20
+            grantWritePermission(context, intent, cameraFileUri)
+
+            cameraIntents.add(intent)
+        }
+
+        val storageIntent = when (chooserType) {
+            ChooserType.CAMERA_AND_GALLERY -> createVideoGalleryIntent(allowMultiple)
+            else -> createVideoDocumentsIntent(allowMultiple)
         }
 
         val chooserIntent = Intent.createChooser(storageIntent, chooserTitle)
