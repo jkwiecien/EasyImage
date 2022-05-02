@@ -17,7 +17,8 @@ class EasyImage private constructor(
         private val allowMultiple: Boolean,
         private val chooserType: ChooserType,
         private val copyImagesToPublicGalleryFolder: Boolean,
-        private val easyImageStateHandler: EasyImageStateHandler
+        private val easyImageStateHandler: EasyImageStateHandler,
+        private val supportedFileFormats: Array<String>,
 ) {
 
     private var lastCameraFile: MediaFile? = null
@@ -69,11 +70,12 @@ class EasyImage private constructor(
                 lastCameraFile = Files.createCameraPictureFile(context)
                 save()
                 val intent = Intents.createChooserIntent(
-                        context = activityCaller.context,
-                        chooserTitle = chooserTitle,
-                        chooserType = chooserType,
-                        cameraFileUri = lastCameraFile!!.uri,
-                        allowMultiple = allowMultiple
+                    context = activityCaller.context,
+                    chooserTitle = chooserTitle,
+                    chooserType = chooserType,
+                    cameraFileUri = lastCameraFile!!.uri,
+                    allowMultiple = allowMultiple,
+                    supportedFileFormats = supportedFileFormats
                 )
                 activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_CHOOSER)
             } catch (error: IOException) {
@@ -329,6 +331,7 @@ class EasyImage private constructor(
         private var chooserType: ChooserType = ChooserType.CAMERA_AND_DOCUMENTS
         private var copyImagesToPublicGalleryFolder: Boolean = false
         private var easyImageStateHandler: EasyImageStateHandler = EasyImageStateHandler.DefaultStateHandler
+        private var supportedFileFormats: Array<String> = emptyArray()
 
         fun setChooserTitle(chooserTitle: String): Builder {
             this.chooserTitle = chooserTitle
@@ -360,6 +363,11 @@ class EasyImage private constructor(
             return this
         }
 
+        fun addSupportedFileFormats(supportedFileFormats: Array<String>): Builder {
+            this.supportedFileFormats = Intents.getSupportedFileFormats(supportedFileFormats)
+            return this
+        }
+
         fun build(): EasyImage {
             return EasyImage(
                     context = context,
@@ -368,7 +376,8 @@ class EasyImage private constructor(
                     chooserType = chooserType,
                     allowMultiple = allowMultiple,
                     copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder,
-                    easyImageStateHandler = easyImageStateHandler
+                    easyImageStateHandler = easyImageStateHandler,
+                    supportedFileFormats = supportedFileFormats
             )
         }
     }
