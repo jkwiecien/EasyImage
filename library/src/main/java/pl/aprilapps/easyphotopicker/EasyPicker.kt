@@ -10,34 +10,34 @@ import androidx.fragment.app.Fragment
 import java.io.IOException
 
 
-class EasyImage private constructor(
-        private val context: Context,
-        private val chooserTitle: String,
-        private val folderName: String,
-        private val allowMultiple: Boolean,
-        private val chooserType: ChooserType,
-        private val copyImagesToPublicGalleryFolder: Boolean,
-        private val easyImageStateHandler: EasyImageStateHandler,
-        private val supportedFileFormats: Array<String>,
+class EasyPicker private constructor(
+    private val context: Context,
+    private val chooserTitle: String,
+    private val folderName: String,
+    private val allowMultiple: Boolean,
+    private val chooserType: ChooserType,
+    private val copyImagesToPublicGalleryFolder: Boolean,
+    private val easyPickerStateHandler: EasyPickerStateHandler,
+    private val supportedFileFormats: Array<String>,
 ) {
 
     private var lastCameraFile: MediaFile? = null
 
     interface Callbacks {
-        fun onImagePickerError(error: Throwable, source: MediaSource)
+        fun onPickerError(error: Throwable, source: MediaSource)
 
-        fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource)
+        fun onMediaFilesPicked(mediaFiles: Array<MediaFile>, source: MediaSource)
 
         fun onCanceled(source: MediaSource)
     }
 
-    interface EasyImageStateHandler {
-        fun restoreEasyImageState(): Bundle
-        fun saveEasyImageState(state: Bundle?)
+    interface EasyPickerStateHandler {
+        fun restoreEasyPickerState(): Bundle
+        fun saveEasyPickerState(state: Bundle?)
 
-        companion object DefaultStateHandler : EasyImageStateHandler {
-            override fun restoreEasyImageState() = Bundle()
-            override fun saveEasyImageState(state: Bundle?) {}
+        companion object DefaultStateHandler : EasyPickerStateHandler {
+            override fun restoreEasyPickerState() = Bundle()
+            override fun saveEasyPickerState(state: Bundle?) {}
         }
     }
 
@@ -193,7 +193,7 @@ class EasyImage private constructor(
             callbacks.onMediaFilesPicked(arrayOf(mediaFile), MediaSource.DOCUMENTS)
         } catch (error: Throwable) {
             error.printStackTrace()
-            callbacks.onImagePickerError(error, MediaSource.DOCUMENTS)
+            callbacks.onPickerError(error, MediaSource.DOCUMENTS)
         }
         cleanup()
     }
@@ -213,7 +213,7 @@ class EasyImage private constructor(
                     if (files.isNotEmpty()) {
                         callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.GALLERY)
                     } else {
-                        callbacks.onImagePickerError(EasyImageException("No files were returned from gallery"), MediaSource.GALLERY)
+                        callbacks.onPickerError(EasyImageException("No files were returned from gallery"), MediaSource.GALLERY)
                     }
                     cleanup()
                 } else {
@@ -225,7 +225,7 @@ class EasyImage private constructor(
         } catch (error: Throwable) {
             cleanup()
             error.printStackTrace()
-            callbacks.onImagePickerError(error, MediaSource.GALLERY)
+            callbacks.onPickerError(error, MediaSource.GALLERY)
         }
 
     }
@@ -240,7 +240,7 @@ class EasyImage private constructor(
                 callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.CAMERA_IMAGE)
             } catch (error: Throwable) {
                 error.printStackTrace()
-                callbacks.onImagePickerError(EasyImageException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
+                callbacks.onPickerError(EasyImageException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
             }
         }
         cleanup()
@@ -257,7 +257,7 @@ class EasyImage private constructor(
                 callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.CAMERA_VIDEO)
             } catch (error: Throwable) {
                 error.printStackTrace()
-                callbacks.onImagePickerError(EasyImageException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
+                callbacks.onPickerError(EasyImageException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
             }
         }
         cleanup()
@@ -297,7 +297,7 @@ class EasyImage private constructor(
     }
 
     private fun save() {
-        easyImageStateHandler.saveEasyImageState(
+        easyPickerStateHandler.saveEasyPickerState(
                 Bundle().apply {
                     putParcelable(KEY_LAST_CAMERA_FILE, lastCameraFile)
                 }
@@ -305,7 +305,7 @@ class EasyImage private constructor(
     }
 
     private fun restore() {
-        easyImageStateHandler.restoreEasyImageState().apply {
+        easyPickerStateHandler.restoreEasyPickerState().apply {
             lastCameraFile = lastCameraFile ?: getParcelable(KEY_LAST_CAMERA_FILE) as MediaFile?
         }
     }
@@ -330,7 +330,7 @@ class EasyImage private constructor(
         private var allowMultiple = false
         private var chooserType: ChooserType = ChooserType.CAMERA_AND_DOCUMENTS
         private var copyImagesToPublicGalleryFolder: Boolean = false
-        private var easyImageStateHandler: EasyImageStateHandler = EasyImageStateHandler.DefaultStateHandler
+        private var easyPickerStateHandler: EasyPickerStateHandler = EasyPickerStateHandler.DefaultStateHandler
         private var supportedFileFormats: Array<String> = emptyArray()
 
         fun setChooserTitle(chooserTitle: String): Builder {
@@ -358,8 +358,8 @@ class EasyImage private constructor(
             return this
         }
 
-        fun setStateHandler(easyImageStateHandler: EasyImageStateHandler): Builder {
-            this.easyImageStateHandler = easyImageStateHandler
+        fun setStateHandler(easyPickerStateHandler: EasyPickerStateHandler): Builder {
+            this.easyPickerStateHandler = easyPickerStateHandler
             return this
         }
 
@@ -368,15 +368,15 @@ class EasyImage private constructor(
             return this
         }
 
-        fun build(): EasyImage {
-            return EasyImage(
+        fun build(): EasyPicker {
+            return EasyPicker(
                     context = context,
                     chooserTitle = chooserTitle,
                     folderName = folderName,
                     chooserType = chooserType,
                     allowMultiple = allowMultiple,
                     copyImagesToPublicGalleryFolder = copyImagesToPublicGalleryFolder,
-                    easyImageStateHandler = easyImageStateHandler,
+                    easyPickerStateHandler = easyPickerStateHandler,
                     supportedFileFormats = supportedFileFormats
             )
         }
