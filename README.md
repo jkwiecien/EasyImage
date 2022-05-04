@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/abhinav12k/EasyPicker.svg)](https://jitpack.io/#abhinav12k/EasyPicker)
+
 # What is it?
 EasyPicker is an extended version of easy image library which allows you to easily capture images and videos from the gallery, camera or get files from documents based on specified file formats without creating lots of boilerplate.
 
@@ -22,11 +24,11 @@ Also you'll need to ask for this permission in the runtime in the moment of your
     If your app targets M and above and declares as using the CAMERA permission which is not granted, then attempting to use this action will result in a SecurityException.
 
 For this reason, if your app uses `CAMERA` permission, you should check it along **with** `WRITE_EXTERNAL_STORAGE` before calling `EasyPicker.openCamera()`
-<!-- 
+
 ## Gradle dependency
 Get the latest version from jitpack
 
-[![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage) -->
+[![](https://jitpack.io/v/abhinav12k/EasyPicker.svg)](https://jitpack.io/#abhinav12k/EasyPicker)
 
 # Usage
 ## Essentials
