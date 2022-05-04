@@ -1,6 +1,5 @@
 package pl.aprilapps.easypicker
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -20,7 +19,6 @@ import pl.aprilapps.easypicker.MimeType.PDF
 import pl.aprilapps.easypicker.MimeType.TEXT
 import pl.aprilapps.easypicker.MimeType.XLS
 import java.io.IOException
-import java.util.*
 
 internal object Intents {
 
@@ -89,7 +87,6 @@ internal object Intents {
         return intent
     }
 
-    @SuppressLint("QueryPermissionsNeeded")
     @Throws(IOException::class)
     internal fun createChooserIntent(
         context: Context,
@@ -102,25 +99,21 @@ internal object Intents {
         val targetIntents = ArrayList<Intent>()
         val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val packageManager = context.packageManager
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            val camList = packageManager.queryIntentActivities(captureIntent, 0)
-            for (resolveInfo in camList) {
-                val packageName = resolveInfo.activityInfo.packageName
-                val intent = Intent(captureIntent)
-                intent.component = ComponentName(
-                    resolveInfo.activityInfo.packageName,
-                    resolveInfo.activityInfo.name
-                )
-                intent.setPackage(packageName)
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri)
+        val camList = packageManager.queryIntentActivities(captureIntent, 0)
+        for (resolveInfo in camList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            val intent = Intent(captureIntent)
+            intent.component = ComponentName(
+                resolveInfo.activityInfo.packageName,
+                resolveInfo.activityInfo.name
+            )
+            intent.setPackage(packageName)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFileUri)
 
-                //We have to explicitly grant the write permission since Intent.setFlag works only on API Level >=20
-                grantWritePermission(context, intent, cameraFileUri)
+            //We have to explicitly grant the write permission since Intent.setFlag works only on API Level >=20
+            grantWritePermission(context, intent, cameraFileUri)
 
-                targetIntents.add(intent)
-            }
-        } else {
-            targetIntents.add(captureIntent)
+            targetIntents.add(intent)
         }
 
         val chooserIntent: Intent?

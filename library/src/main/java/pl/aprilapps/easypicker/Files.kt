@@ -28,7 +28,7 @@ object Files {
     }
 
     private fun generateFileName(): String {
-        return "ei_${System.currentTimeMillis()}"
+        return "ep_${System.currentTimeMillis()}"
     }
 
     private fun writeToFile(inputStream: InputStream, file: File) {
