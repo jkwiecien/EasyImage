@@ -1,4 +1,4 @@
-package pl.aprilapps.easyphotopicker
+package pl.aprilapps.easypicker
 
 object MimeType {
     const val DOC = "application/msword"

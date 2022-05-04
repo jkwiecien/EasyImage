@@ -1,4 +1,4 @@
-package pl.aprilapps.easyphotopicker.sample;
+package pl.aprilapps.easypicker.sample;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
-import pl.aprilapps.easyphotopicker.MediaFile;
+import pl.aprilapps.easypicker.MediaFile;
 
 
 /**

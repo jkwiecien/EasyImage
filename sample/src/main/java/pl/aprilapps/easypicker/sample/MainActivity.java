@@ -1,4 +1,4 @@
-package pl.aprilapps.easyphotopicker.sample;
+package pl.aprilapps.easypicker.sample;
 
 import android.Manifest;
 import android.content.Intent;
@@ -18,11 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import pl.aprilapps.easyphotopicker.ChooserType;
-import pl.aprilapps.easyphotopicker.DefaultCallback;
-import pl.aprilapps.easyphotopicker.EasyPicker;
-import pl.aprilapps.easyphotopicker.MediaFile;
-import pl.aprilapps.easyphotopicker.MediaSource;
+import pl.aprilapps.easypicker.ChooserType;
+import pl.aprilapps.easypicker.DefaultCallback;
+import pl.aprilapps.easypicker.EasyPicker;
+import pl.aprilapps.easypicker.MediaFile;
+import pl.aprilapps.easypicker.MediaSource;
 
 public class MainActivity extends AppCompatActivity implements EasyPicker.EasyPickerStateHandler {
 

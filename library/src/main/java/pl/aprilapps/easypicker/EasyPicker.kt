@@ -1,4 +1,4 @@
-package pl.aprilapps.easyphotopicker
+package pl.aprilapps.easypicker
 
 import android.app.Activity
 import android.content.Context
@@ -77,7 +77,7 @@ class EasyPicker private constructor(
                     allowMultiple = allowMultiple,
                     supportedFileFormats = supportedFileFormats
                 )
-                activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_CHOOSER)
+                activityCaller.startActivityForResult(intent, RequestCodes.PICK_FILE_FROM_CHOOSER)
             } catch (error: IOException) {
                 error.printStackTrace()
                 cleanup()
@@ -89,7 +89,7 @@ class EasyPicker private constructor(
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
             val intent = Intents.createDocumentsIntent(allowMultiple)
-            activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_DOCUMENTS)
+            activityCaller.startActivityForResult(intent, RequestCodes.PICK_FILE_FROM_DOCUMENTS)
         }
     }
 
@@ -113,7 +113,7 @@ class EasyPicker private constructor(
                     }
 
             if (capableComponent == null) {
-                Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
+                Log.e(EASYPICKER_LOG_TAG, "No app capable of handling camera intent")
                 cleanup()
             }
         }
@@ -130,7 +130,7 @@ class EasyPicker private constructor(
                         activityCaller.startActivityForResult(recordVideoIntent, RequestCodes.CAPTURE_VIDEO)
                     }
             if (capableComponent == null) {
-                Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
+                Log.e(EASYPICKER_LOG_TAG, "No app capable of handling camera intent")
                 cleanup()
             }
         }
@@ -159,7 +159,7 @@ class EasyPicker private constructor(
         restore()
 
         val mediaSource = when (requestCode) {
-            RequestCodes.PICK_PICTURE_FROM_DOCUMENTS -> MediaSource.DOCUMENTS
+            RequestCodes.PICK_FILE_FROM_DOCUMENTS -> MediaSource.DOCUMENTS
             RequestCodes.PICK_PICTURE_FROM_GALLERY -> MediaSource.GALLERY
             RequestCodes.TAKE_PICTURE -> MediaSource.CAMERA_IMAGE
             RequestCodes.CAPTURE_VIDEO -> MediaSource.CAMERA_VIDEO
@@ -167,11 +167,11 @@ class EasyPicker private constructor(
         }
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && resultIntent != null) {
+            if (requestCode == RequestCodes.PICK_FILE_FROM_DOCUMENTS && resultIntent != null) {
                 onPickedExistingPictures(resultIntent, activity, callbacks)
             } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && resultIntent != null) {
                 onPickedExistingPictures(resultIntent, activity, callbacks)
-            } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_CHOOSER) {
+            } else if (requestCode == RequestCodes.PICK_FILE_FROM_CHOOSER) {
                 onFileReturnedFromChooser(resultIntent, activity, callbacks)
             } else if (requestCode == RequestCodes.TAKE_PICTURE) {
                 onPictureReturnedFromCamera(activity, callbacks)
@@ -185,7 +185,7 @@ class EasyPicker private constructor(
     }
 
     private fun onPickedExistingPicturesFromLocalStorage(resultIntent: Intent, activity: Activity, callbacks: Callbacks) {
-        Log.d(EASYIMAGE_LOG_TAG, "Existing picture returned from local storage")
+        Log.d(EASYPICKER_LOG_TAG, "Existing picture returned from local storage")
         try {
             val uri = resultIntent.data!!
             val photoFile = Files.pickedExistingPicture(activity, uri)
@@ -203,7 +203,7 @@ class EasyPicker private constructor(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 val clipData = resultIntent.clipData
                 if (clipData != null) {
-                    Log.d(EASYIMAGE_LOG_TAG, "Existing picture returned")
+                    Log.d(EASYPICKER_LOG_TAG, "Existing picture returned")
                     val files = mutableListOf<MediaFile>()
                     for (i in 0 until clipData.itemCount) {
                         val uri = clipData.getItemAt(i).uri
@@ -213,7 +213,7 @@ class EasyPicker private constructor(
                     if (files.isNotEmpty()) {
                         callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.GALLERY)
                     } else {
-                        callbacks.onPickerError(EasyImageException("No files were returned from gallery"), MediaSource.GALLERY)
+                        callbacks.onPickerError(EasyPickerException("No files were returned from gallery"), MediaSource.GALLERY)
                     }
                     cleanup()
                 } else {
@@ -231,7 +231,7 @@ class EasyPicker private constructor(
     }
 
     private fun onPictureReturnedFromCamera(activity: Activity, callbacks: Callbacks) {
-        Log.d(EASYIMAGE_LOG_TAG, "Picture returned from camera")
+        Log.d(EASYPICKER_LOG_TAG, "Picture returned from camera")
         lastCameraFile?.let { cameraFile ->
             try {
                 if (cameraFile.uri.toString().isEmpty()) Intents.revokeWritePermission(activity, cameraFile.uri)
@@ -240,14 +240,14 @@ class EasyPicker private constructor(
                 callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.CAMERA_IMAGE)
             } catch (error: Throwable) {
                 error.printStackTrace()
-                callbacks.onPickerError(EasyImageException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
+                callbacks.onPickerError(EasyPickerException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
             }
         }
         cleanup()
     }
 
     private fun onVideoReturnedFromCamera(activity: Activity, callbacks: Callbacks) {
-        Log.d(EASYIMAGE_LOG_TAG, "Video returned from camera")
+        Log.d(EASYPICKER_LOG_TAG, "Video returned from camera")
         lastCameraFile?.let { cameraFile ->
             try {
                 if (cameraFile.uri.toString().isEmpty()) Intents.revokeWritePermission(activity, cameraFile.uri)
@@ -257,14 +257,14 @@ class EasyPicker private constructor(
                 callbacks.onMediaFilesPicked(files.toTypedArray(), MediaSource.CAMERA_VIDEO)
             } catch (error: Throwable) {
                 error.printStackTrace()
-                callbacks.onPickerError(EasyImageException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
+                callbacks.onPickerError(EasyPickerException("Unable to get the picture returned from camera.", error), MediaSource.CAMERA_IMAGE)
             }
         }
         cleanup()
     }
 
     private fun onFileReturnedFromChooser(resultIntent: Intent?, activity: Activity, callbacks: Callbacks) {
-        Log.d(EASYIMAGE_LOG_TAG, "File returned from chooser")
+        Log.d(EASYPICKER_LOG_TAG, "File returned from chooser")
         if (resultIntent != null && !Intents.isTherePhotoTakenWithCameraInsideIntent(resultIntent)
                 && (resultIntent.data != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && resultIntent.clipData != null)) {
             onPickedExistingPictures(resultIntent, activity, callbacks)
@@ -280,9 +280,9 @@ class EasyPicker private constructor(
 
     private fun removeCameraFileAndCleanup() {
         lastCameraFile?.file?.let { file ->
-            Log.d(EASYIMAGE_LOG_TAG, "Removing camera file of size: ${file.length()}")
+            Log.d(EASYPICKER_LOG_TAG, "Removing camera file of size: ${file.length()}")
             file.delete()
-            Log.d(EASYIMAGE_LOG_TAG, "Clearing reference to camera file")
+            Log.d(EASYPICKER_LOG_TAG, "Clearing reference to camera file")
             lastCameraFile = null
             save()
         }
@@ -290,7 +290,7 @@ class EasyPicker private constructor(
 
     private fun cleanup() {
         lastCameraFile?.let { cameraFile ->
-            Log.d(EASYIMAGE_LOG_TAG, "Clearing reference to camera file of size: ${cameraFile.file.length()}")
+            Log.d(EASYPICKER_LOG_TAG, "Clearing reference to camera file of size: ${cameraFile.file.length()}")
             lastCameraFile = null
             save()
         }
@@ -319,7 +319,7 @@ class EasyPicker private constructor(
             private fun getAppName(context: Context): String = try {
                 context.applicationInfo.loadLabel(context.packageManager).toString()
             } catch (error: Throwable) {
-                Log.e(EASYIMAGE_LOG_TAG, "App name couldn't be found. Probably no label was specified in the AndroidManifest.xml. Using EasyImage as a folder name for files.")
+                Log.e(EASYPICKER_LOG_TAG, "App name couldn't be found. Probably no label was specified in the AndroidManifest.xml. Using EasyImage as a folder name for files.")
                 error.printStackTrace()
                 "EasyImage"
             }

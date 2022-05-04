@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="pl.aprilapps.easyphotopicker.sample">
+    package="pl.aprilapps.easypicker.sample">
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -23,7 +23,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".MainActivity"
+            android:name="pl.aprilapps.easypicker.sample.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

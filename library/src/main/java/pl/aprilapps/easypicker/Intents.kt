@@ -1,4 +1,4 @@
-package pl.aprilapps.easyphotopicker
+package pl.aprilapps.easypicker
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
@@ -9,16 +9,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import android.provider.MediaStore
-import pl.aprilapps.easyphotopicker.MimeType.AUDIO
-import pl.aprilapps.easyphotopicker.MimeType.DOC
-import pl.aprilapps.easyphotopicker.MimeType.DOCX
-import pl.aprilapps.easyphotopicker.MimeType.IMAGE
-import pl.aprilapps.easyphotopicker.MimeType.IMAGE_JPEG
-import pl.aprilapps.easyphotopicker.MimeType.IMAGE_JPG
-import pl.aprilapps.easyphotopicker.MimeType.IMAGE_PNG
-import pl.aprilapps.easyphotopicker.MimeType.PDF
-import pl.aprilapps.easyphotopicker.MimeType.TEXT
-import pl.aprilapps.easyphotopicker.MimeType.XLS
+import pl.aprilapps.easypicker.MimeType.AUDIO
+import pl.aprilapps.easypicker.MimeType.DOC
+import pl.aprilapps.easypicker.MimeType.DOCX
+import pl.aprilapps.easypicker.MimeType.IMAGE
+import pl.aprilapps.easypicker.MimeType.IMAGE_JPEG
+import pl.aprilapps.easypicker.MimeType.IMAGE_JPG
+import pl.aprilapps.easypicker.MimeType.IMAGE_PNG
+import pl.aprilapps.easypicker.MimeType.PDF
+import pl.aprilapps.easypicker.MimeType.TEXT
+import pl.aprilapps.easypicker.MimeType.XLS
 import java.io.IOException
 import java.util.*
 
@@ -46,11 +46,9 @@ internal object Intents {
                 Intent.ACTION_OPEN_DOCUMENT
             )
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        if (types.isNotEmpty()) {
+        if (types.isNotEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             intent.type = "*/*"
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, types)
-            }
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, types)
         } else {
             intent.type = "image/*"
         }
@@ -125,7 +123,7 @@ internal object Intents {
             targetIntents.add(captureIntent)
         }
 
-        var chooserIntent: Intent? = null
+        val chooserIntent: Intent?
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val storageIntent = when (chooserType) {
                 ChooserType.CAMERA_AND_GALLERY -> createGalleryIntent(allowMultiple)
