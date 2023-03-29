@@ -1,15 +1,33 @@
-<manifest package="pl.aprilapps.easyphotopicker"
+<manifest package="pl.aprilapps.easypicker"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.PICK" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.VIDEO_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+        </intent>
+    </queries>
 
     <application>
         <provider
-            android:name=".EasyImageFileProvider"
-            android:authorities="${applicationId}.easyphotopicker.fileprovider"
+            android:name="pl.aprilapps.easypicker.EasyFileProvider"
+            android:authorities="${applicationId}.easypicker.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/easyimage_filepaths" />
+                android:resource="@xml/easypicker_filepaths" />
         </provider>
     </application>
 

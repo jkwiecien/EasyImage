@@ -1,6 +1,7 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-EasyImage-green.svg?style=true)](https://android-arsenal.com/details/1/2725) [![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
+[![](https://jitpack.io/v/abhinav12k/EasyPicker.svg)](https://jitpack.io/#abhinav12k/EasyPicker)
+
 # What is it?
-EasyImage allows you to easily capture images and videos from the gallery, camera or documents without creating lots of boilerplate.
+EasyPicker is an extended version of easy image library which allows you to easily capture images and videos from the gallery, camera or get files from documents based on specified file formats without creating lots of boilerplate.
 
 # Setup
 
@@ -22,26 +23,27 @@ Also you'll need to ask for this permission in the runtime in the moment of your
 
     If your app targets M and above and declares as using the CAMERA permission which is not granted, then attempting to use this action will result in a SecurityException.
 
-For this reason, if your app uses `CAMERA` permission, you should check it along **with** `WRITE_EXTERNAL_STORAGE` before calling `EasyImage.openCamera()`
+For this reason, if your app uses `CAMERA` permission, you should check it along **with** `WRITE_EXTERNAL_STORAGE` before calling `EasyPicker.openCamera()`
 
 ## Gradle dependency
 Get the latest version from jitpack
 
-[![](https://jitpack.io/v/jkwiecien/EasyImage.svg)](https://jitpack.io/#jkwiecien/EasyImage)
+[![](https://jitpack.io/v/abhinav12k/EasyPicker.svg)](https://jitpack.io/#abhinav12k/EasyPicker)
 
 # Usage
 ## Essentials
 
-Create your EasyImageInstance like this:
+Create your EasyPickerInstance like this:
 ```java
-EasyImage easyImage = new EasyImage.Builder(context)
+EasyPicker easypicker = new EasyPicker.Builder(context)
 
 // Chooser only
 // Will appear as a system chooser title, DEFAULT empty string
 //.setChooserTitle("Pick media")
-// Will tell chooser that it should show documents or gallery apps
-//.setChooserType(ChooserType.CAMERA_AND_DOCUMENTS)  you can use this or the one below
+// Will tell chooser that it should show documents or gallery or all three of them
+//.setChooserType(ChooserType.CAMERA_AND_DOCUMENTS)
 //.setChooserType(ChooserType.CAMERA_AND_GALLERY)
+//.setChooserType(ChooserType.CAMERA_AND_GALLERY_AND_DOCUMENTS)
 // saving EasyImage state (as for now: last camera file link)
 .setMemento(memento)
 
@@ -52,28 +54,31 @@ EasyImage easyImage = new EasyImage.Builder(context)
 
 // Allow multiple picking
 .allowMultiple(true)
+
+// You can also specify the file formats you need to show in documents
+//.addSupportedFileFormats(new String[]{"pdf","image"})
 .build();
 ```
 
 ### Taking image straight from camera
-- `easyImage.openCameraForImage(Activity activity,);`
-- `easyImage.openCameraForImage(Fragment fragment);`
+- `easyPicker.openCameraForImage(Activity activity,);`
+- `easyPicker.openCameraForImage(Fragment fragment);`
 
 ### Capturing video
-- `easyImage.openCameraForVideo(Activity activity);`
-- `easyImage.openCameraForVideo(Fragment fragment);`
+- `easyPicker.openCameraForVideo(Activity activity);`
+- `easyPicker.openCameraForVideo(Fragment fragment);`
 
 ### Taking image from gallery or the gallery picker if there is more than 1 gallery app
-- `easyImage.openGallery(Activity activity);`
-- `easyImage.openGallery(Fragment fragment);`
+- `easyPicker.openGallery(Activity activity);`
+- `easyPicker.openGallery(Fragment fragment);`
 
 ### Taking image from documents
-- `easyImage.openDocuments(Activity activity);`
-- `easyImage.openDocuments(Fragment fragment);`
+- `easyPicker.openDocuments(Activity activity);`
+- `easyPicker.openDocuments(Fragment fragment);`
 
 ### Displaying system picker to chose from camera, documents, or gallery if no documents apps are available
-- `easyImage.openChooser(Activity activity);`
-- `easyImage.openChooser(Fragment fragment);`
+- `easyPicker.openChooser(Activity activity);`
+- `easyPicker.openChooser(Fragment fragment);`
 
 ### Getting the photo file
 
@@ -81,14 +86,14 @@ EasyImage easyImage = new EasyImage.Builder(context)
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        easyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+        easyPicker.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
-            public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
-                onPhotosReturned(imageFiles);
+            public void onMediaFilesPicked(MediaFile[] mediaFiles, MediaSource source) {
+                onPhotosReturned(mediaFiles);
             }
 
             @Override
-            public void onImagePickerError(@NonNull Throwable error, @NonNull MediaSource source) {
+            public void onPickerError(@NonNull Throwable error, @NonNull MediaSource source) {
                 //Some error handling
                 error.printStackTrace();
             }
@@ -100,10 +105,6 @@ EasyImage easyImage = new EasyImage.Builder(context)
         });
     }
 ```
-
-# Known issues
-Library was pretty much rewritten from scratch in kotlin on 29.03.2019. Initial version 3.0.0 might be unstable. In case of problems fallback to version 2.1.1
-Also version 3.0.0 is not backward compatible and will require some changes of those who used previous versions. These are not big tho. Updated readme explains it all.
 
 # License
 

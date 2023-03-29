@@ -1,4 +1,4 @@
-package pl.aprilapps.easyphotopicker
+package pl.aprilapps.easypicker
 
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -22,13 +22,13 @@ import java.io.*
 object Files {
 
     private fun tempImageDirectory(context: Context): File {
-        val privateTempDir = File(context.cacheDir, "EasyImage")
+        val privateTempDir = File(context.cacheDir, "EasyPicker")
         if (!privateTempDir.exists()) privateTempDir.mkdirs()
         return privateTempDir
     }
 
     private fun generateFileName(): String {
-        return "ei_${System.currentTimeMillis()}"
+        return "ep_${System.currentTimeMillis()}"
     }
 
     private fun writeToFile(inputStream: InputStream, file: File) {
@@ -87,7 +87,7 @@ object Files {
         val outputStream: OutputStream = contentResolver.openOutputStream(copyUri)!!
         bitmapToCopy.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         outputStream.close()
-        Log.d(EASYIMAGE_LOG_TAG, "Copied image to public gallery: ${copyUri.path}")
+        Log.d(EASYPICKER_LOG_TAG, "Copied image to public gallery: ${copyUri.path}")
         return copyUri.path!!
     }
 
@@ -100,7 +100,7 @@ object Files {
         val outputStream = FileOutputStream(copyFile)
         bitmapToCopy.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         outputStream.close()
-        Log.d(EASYIMAGE_LOG_TAG, "Copied image to public gallery: ${copyFile.path}")
+        Log.d(EASYPICKER_LOG_TAG, "Copied image to public gallery: ${copyFile.path}")
         return copyFile.path
     }
 
@@ -116,7 +116,7 @@ object Files {
                     }
                 } catch (error: Throwable) {
                     error.printStackTrace()
-                    Log.e(EASYIMAGE_LOG_TAG, "File couldn't be copied to public gallery: ${fileToCopy.name}")
+                    Log.e(EASYPICKER_LOG_TAG, "File couldn't be copied to public gallery: ${fileToCopy.name}")
                     null
                 }
             }
@@ -126,7 +126,7 @@ object Files {
 
     private fun runMediaScanner(context: Context, paths: List<String>) {
         MediaScannerConnection.scanFile(context, paths.toTypedArray(), null) { path, uri ->
-            Log.d(EASYIMAGE_LOG_TAG, "Scanned media with path: $path | uri: $uri")
+            Log.d(EASYPICKER_LOG_TAG, "Scanned media with path: $path | uri: $uri")
         }
     }
 
@@ -165,7 +165,7 @@ object Files {
 
     private fun getUriToFile(context: Context, file: File): Uri {
         val packageName = context.applicationContext.packageName
-        val authority = "$packageName.easyphotopicker.fileprovider"
+        val authority = "$packageName.easypicker.fileprovider"
         return FileProvider.getUriForFile(context, authority, file)
     }
 
